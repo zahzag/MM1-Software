@@ -1,0 +1,7 @@
+
+(10÷0.3117)+(10÷0.3554)+(10÷0.3324)+(10÷0.3268)+(10÷0.3524)/ 5 ( 5 tests) 
+=> Umean= 29.85 job/sec
+=> Umax = lamda / ulization_min = (10÷0.3117) = 32 job/sec 
+
+
+we try to clculate utilization using the servce rate  found on test 1 Umax=33 with lamda = 10 ; utilization = 10/33 = 0.3030 => 30.30% 

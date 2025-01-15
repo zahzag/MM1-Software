@@ -1,0 +1,3 @@
+the reason for using MM1 FCFS queuing system is that markov chains provide us with closed form solution to calculate performance metrics such as mean response time of the system and power consumption 
+
+the arrival process should be a poisson process : the inter-arrival time between the jobs is a sequence independent random variable, each having exponential distribution with rate 1/λ (λ jobs/sec)
