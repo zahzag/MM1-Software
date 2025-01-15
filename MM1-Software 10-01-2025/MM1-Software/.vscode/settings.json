@@ -1,0 +1,7 @@
+{
+    "java.project.sourcePaths": [
+        "client/src",
+        "Server/Server/lib",
+        "Server/Server/src"
+    ]
+}

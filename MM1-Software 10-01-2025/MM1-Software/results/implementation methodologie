@@ -1,0 +1,7 @@
+-shielding cpu 1 and 2 using "grub2"
+-disabling multythreading and turbo boost using /sys/devices/system/cpu...
+-set ip adresses between mchines M1 and M2 
+-set cpu 1 governor to user space
+-set frequecy to highest one 
+-run server using taskset to pin to cpu1 : taskset -c 1 java -cp "../lib/*:." Server.Server
+observing results for each lamda=1,10,20,50

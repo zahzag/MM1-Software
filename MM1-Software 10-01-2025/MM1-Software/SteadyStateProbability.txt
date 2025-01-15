@@ -1,0 +1,34 @@
+Pi_0: 100.0
+Utilization (1-Pi_0) : 0.0Pi_0: 100.0
+Utilization (1-Pi_0) : 0.0Pi_0: 100.0
+Utilization (1-Pi_0) : 0.0Pi_0: 100.0
+Utilization (1-Pi_0) : 0.0Pi_0: 100.0
+Utilization (1-Pi_0) : 0.0Pi_0: 100.0
+Utilization (1-Pi_0) : 0.0Pi_0: 100.0
+Utilization (1-Pi_0) : 0.0Pi_0: 100.0
+Utilization (1-Pi_0) : 0.0Pi_0: 100.0
+Utilization (1-Pi_0) : 0.0Pi_0: 100.0
+Utilization (1-Pi_0) : 0.0Pi_0: 100.0
+Utilization (1-Pi_0) : 0.0Pi_0: 100.0
+Utilization (1-Pi_0) : 0.0Pi_0: 100.0
+Utilization (1-Pi_0) : 0.0Pi_0: 100.0
+Utilization (1-Pi_0) : 0.0Pi_0: 100.0
+Utilization (1-Pi_0) : 0.0Pi_0: 100.0
+Utilization (1-Pi_0) : 0.0Pi_0: 100.0
+Utilization (1-Pi_0) : 0.0Pi_0: 99.54489035995036
+Pi_1: 0.4551096400496483
+Utilization (1-Pi_0) : 0.45510964004964194
+Pi_0: 99.24098671726756
+Pi_1: 0.7168458781362007
+Pi_2: 0.0421674045962471
+Utilization (1-Pi_0) : 0.7590132827324396
+Pi_0: 100.0
+Utilization (1-Pi_0) : 0.0Pi_0: 99.59534648457259
+Pi_1: 0.4046535154274153
+Utilization (1-Pi_0) : 0.40465351542741246Pi_0: 99.74450689831374
+Pi_1: 0.25549310168625444
+Utilization (1-Pi_0) : 0.2554931016862554Pi_0: 99.14928093984201
+Pi_1: 0.8507190601579907
+Utilization (1-Pi_0) : 0.850719060157985Pi_0: 80.0
+Pi_1: 20.0
+Utilization (1-Pi_0) : 20.0
