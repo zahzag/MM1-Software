@@ -4,6 +4,7 @@ import net.openhft.affinity.AffinityLock;
 import java.io.IOException;
 import java.net.UnknownHostException;
 //import java.util.ArrayList;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 //import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -16,7 +17,8 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class Server {
 
-	static final int RUN = 1;
+	//static final int RUN = 1;
+	static int RUN = 1;
 	static LinkedBlockingQueue<JobData> jobDataQueue;
 	static long counter;
 	public static int highest_state = 0;
@@ -48,11 +50,16 @@ public class Server {
 	}
 
 	public static void main(String[] args) throws UnknownHostException, IOException {
-		//lambda = Double.parseDouble(args[0]);
-		lambda = 10;
+
+
+		lambda = Double.parseDouble(args[0]);
+		//lambda = 1;
 		//check cpu availability
+		int availableProcessors = Runtime.getRuntime().availableProcessors();
+		// Get the number of CPU cores
+		System.out.println("Available processors: " + availableProcessors);
 		System.out.println(AffinityLock.dumpLocks());
 		new Server(9999);
-
+		//new Server(9995);
 	}
 }

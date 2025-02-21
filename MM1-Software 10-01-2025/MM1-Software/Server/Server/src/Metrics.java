@@ -5,28 +5,16 @@ package Server;
  * MeanResponseTime, Power and Utilization etc. Also store's them into files.
  * @author Roohi
  */
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import java.io.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.openxml4j.opc.OPCPackage;
-import org.apache.poi.openxml4j.opc.Package;
-import org.apache.poi.poifs.filesystem.POIFSFileSystem;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.apache.poi.util.SystemOutLogger;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 
 public class Metrics {
@@ -51,7 +39,8 @@ public class Metrics {
 	public static int state_total = 0;
 	public static double k = 0;
 	public static double MRT = 0;
-
+	public static long cpuTime;
+	public static double MeanCpuTime;
 //	public static double Service_Time_pool_avg;
 //	public static double MRT_pool_avg;
 
@@ -61,34 +50,33 @@ public class Metrics {
 		FileWriter writer;
 		File file;
 		file = new File("SteadyStateProbability.txt");
-		String filepath = "../workbook.xsls";
-		// Initializing excel file
+		String filepath = "workbook.xlsx";
 		Workbook wb = null;
-		if (new File(filepath).exists()) {
-			InputStream excelFile = null;
-			System.out.println("exist");
-			try {
-				excelFile = new FileInputStream(filepath);
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
+		try {
+			if (new File(filepath).exists()) {
+				System.out.println("excel found");
+                try {
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+                try (InputStream excelFile = new FileInputStream(filepath)) {
+					wb = new XSSFWorkbook(excelFile);
+				}
+			} else {
+				System.out.println("excel not found");
+				wb = new XSSFWorkbook();
 			}
-
-			try {
-				wb = new XSSFWorkbook(excelFile.toString());
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
-		} else {
-			wb = new XSSFWorkbook();
+		} catch (IOException e) {
+			e.printStackTrace();
+			wb = new XSSFWorkbook(); // Fallback
 		}
 
 		Sheet sheet;
 
-		if (wb.getSheet("Test Sheet") != null) {
-			sheet = wb.getSheet("Test Sheet");
+		if (wb.getSheet("Test_Sheet") != null) {
+			sheet = wb.getSheet("Test_Sheet");
 		} else {
-			sheet = wb.createSheet("Test Sheet");
+			sheet = wb.createSheet("Test_Sheet");
 			Row rowTitles = sheet.createRow(0);
 
 			rowTitles.createCell(0).setCellValue("Confidence Metrics");
@@ -106,6 +94,10 @@ public class Metrics {
 			rowTitles.createCell(12).setCellValue("Mes. U");
 			rowTitles.createCell(13).setCellValue("Avg. Freq");
 			rowTitles.createCell(14).setCellValue("State");
+			rowTitles.createCell(15).setCellValue("Mes MCpuTime");
+			rowTitles.createCell(16).setCellValue("Mes frequency");
+			rowTitles.createCell(17).setCellValue("Mes Average Power");
+			rowTitles.createCell(18).setCellValue("Mes Total Power");
 		}
 		// Time needed to create Excel file.
 		try {
@@ -123,7 +115,7 @@ public class Metrics {
 				// Prints the State and the number of times it occurred. And
 				// calculates the sum of all occurrences.
 				for (int i = 0; i <= Server.highest_state; i++) {
-				//	System.out.println("No. of times in state " + i + ": " + Server.hmap.get(i));
+					//System.out.println("No. of times in state " + i + ": " + Server.hmap.get(i));
 					state_total = Server.hmap.get(i) + state_total;
 				}
 				//System.out.println("Total frequency of all states: " + state_total);
@@ -132,8 +124,14 @@ public class Metrics {
 				// Calculates Steady State Probability for each state.
 				for (int j = 0; j <= Server.highest_state; j++) {
 					//System.out.println("Pi_" + j + ": " + ((double) (Server.hmap.get(j)) / state_total) * 100);
-					k= (j*((double) (Server.hmap.get(j)) / state_total))+k;
+
+						k= (j*((double) (Server.hmap.get(j)) / state_total))+k;
+
 				}
+//				Job.logger.info("higher stat : "+Server.highest_state);
+//				Job.logger.info("stat total : "+state_total);
+//				Job.logger.info("k : "+k);
+//				Job.logger.info(""+Server.hmap);
 				System.out.println("Mean Number of jobs K: "+k);
 				MRT = (k/measured_lambda)*1000;
 				System.out.println("Modelled MRT(k/lambda) : " + MRT);
@@ -149,6 +147,8 @@ public class Metrics {
 					writer.write(System.getProperty("line.separator"));
 				}
 				writer.write("Utilization (1-Pi_" + 0 + ") : " +  U);
+				writer.write("\n-------------------------------------------------------------------");
+
 				writer.flush();
 				writer.close();
 
@@ -173,6 +173,8 @@ public class Metrics {
 						row.createCell(10).setCellValue(utilization);
 						row.createCell(11).setCellValue(U);
 						row.createCell(14).setCellValue(Server.highest_state);
+						row.createCell(15).setCellValue(MeanCpuTime/1000000);
+						//row.createCell(16).setCellValue(Server.highest_state);
 
 						test = false;
 
@@ -186,6 +188,7 @@ public class Metrics {
 				wb.write(fileOut);
 				fileOut.close();
 				//wb.close();
+				System.out.println("Exiting program...");
 
 			}
 		} catch (IOException e) {
@@ -194,6 +197,32 @@ public class Metrics {
 		}
 	}
 
+	public static String executeCommand(String command) {
+		StringBuilder output = new StringBuilder();
+
+		try {
+			ProcessBuilder processBuilder = new ProcessBuilder();
+			processBuilder.command("bash", "-c", command);
+			processBuilder.redirectErrorStream(true);
+
+			Process process = processBuilder.start();
+
+			BufferedReader reader = new BufferedReader(
+					new InputStreamReader(process.getInputStream()));
+
+			String line;
+			while ((line = reader.readLine()) != null) {
+				output.append(line).append("\n");
+			}
+
+			process.waitFor();
+
+		} catch (IOException | InterruptedException e) {
+			e.printStackTrace();
+		}
+
+		return output.toString();
+	}
 	private static void calculateData() {
 
 		JobData data = null;
@@ -210,13 +239,14 @@ public class Metrics {
 
 				RspTime = RspTime + data.getResponseTime();// nanoseconds
 				SrvcTime = SrvcTime + data.getCalcTime();// nanoseconds
-				PacketLength =PacketLength + data.getPacketLength();
+				PacketLength = PacketLength + data.getPacketLength();
+				cpuTime = cpuTime + data.getCpuTime();//nanosecands
 
 			} else {
 				MeanRspTime = (double)(RspTime / Server.counter);
 				MeanSrvcTime = (double)(SrvcTime/ Server.counter);
 				MeanPacketLength = (double)(PacketLength / Server.counter);
-
+				MeanCpuTime = (double)(cpuTime/Server.counter);
 				empty = true;
 			}
 		}
@@ -254,6 +284,8 @@ public class Metrics {
 		}
 		MRT_pool_avg = (double)(MRT_sum/Server.counter);
 		Service_Time_pool_avg = (double)(Service_Time_pool_sum/Server.counter);*/
+
+
 	}
 
 	private static void modelled_data() {
@@ -279,7 +311,7 @@ public class Metrics {
 		job_count = Server.counter;
 		System.out.println("No. of Jobs Served : " + job_count);
 		System.out.println("Modelled Lambda : " + Server.lambda);
-		measured_lambda = job_count/600.0;//set according to the duration of the test run otherwise claculations will be wrong
+		measured_lambda = job_count/600.0;//set according to the duration of the test run otherwise calculations will be wrong : 600.0
 		System.out.println("Measured Lambda : " + measured_lambda);
 		mean_service_time = MeanSrvcTime/1000000;//Milliseconds
 		System.out.println("Measured Mean Service Time : " + mean_service_time + " Milliseconds");
@@ -293,6 +325,7 @@ public class Metrics {
 		utilization = (measured_lambda / service_rate) * 100;
 		System.out.println("Modelled Utilization : " + utilization);
 
+		System.out.println("Measured cpu time "+ MeanCpuTime/1_000_000.0);
 /*
 		System.out.println("-----POOL VALUES--------");
 		double mean_service_time_pool = Service_Time_pool_avg/1000000;//Milliseconds

@@ -32,11 +32,13 @@ public class LoadGenerator implements Runnable {
     private InetAddress serverIPAddress;
     
     private static final int jobListenerPort = 9999;
+    //private static final int jobListenerPort = 9995;
     private static final int resetListenerPort = 9950;
-    
-    //private static final String serverIP = "127.0.0.1";//local address
+    //private static final int resetListenerPort = 9920;
+
     private static final String serverIP = "10.0.0.2";//server address
-    
+    //private static final String serverIP = "127.0.0.1";//local address
+
     private static final int STOP = 0;
     private static final int RUN = 1;
 
@@ -84,9 +86,12 @@ public class LoadGenerator implements Runnable {
     	List<Long> repeatTimes = new LinkedList<Long>();
         while (this.state == RUN) {
         //packet with exponentially distributed integer is sent to the server
-	    long service_repeat_time = (int) dist.nextExponential((double) repeat);
+	        //to make the repeat distributed exponentially between 50 Million and 80 Million , then the random ditrubuted number should be [1,1.6] => min=1*50M , max = 1.6*50M=80M
+            double nextExpNumber=dist.nextExponentialRepeat();
+            long service_repeat_time = Math.round(nextExpNumber * this.repeat);
 //	    System.out.println("Job Processed : "+(counter+1)+", Exponentially Repeat Value : " + service_repeat_time);
             byte[] buffer = Long.toString(service_repeat_time).getBytes();
+            //System.out.println("service_repeat_time : "+ service_repeat_time);
             try {
                 loadGeneratorSocket.send(new DatagramPacket(buffer,
                         buffer.length, serverIPAddress, jobListenerPort));
@@ -103,6 +108,7 @@ public class LoadGenerator implements Runnable {
             rate = dist.nextExponential(1.0 / (double) lambda);
             if (rate == 0)
                 rate = 1;
+
             try {
 //		System.out.println("Rate in Seconds" + this.rate);
 		Thread.sleep(Math.round(1000 * this.rate));
@@ -147,18 +153,18 @@ public class LoadGenerator implements Runnable {
     public static void main(String[] args) throws UnknownHostException,
             IOException, InterruptedException {
         
-        // double lambda = Double.parseDouble(args[0]);
-        // duration = Integer.parseInt(args[1]);
-        // repeat = Integer.parseInt(args[2]);
+        double lambda = Double.parseDouble(args[0]);
+        duration = Integer.parseInt(args[1]);
+        repeat = Integer.parseInt(args[2]);
         
-        double lambda = (double)10;
-        duration = (int)120000; // 2min
-        repeat = (int)1;
+       // double lambda = (double)1;
+       // duration = (int)600000; // 10min
+       // repeat = (int)1000000;
         
         System.out.println("lambda: " + lambda);
         System.out.println("duration: " + duration);
         System.out.println("repeat: " + repeat);
-        
+
         LoadGenerator loadGen = new LoadGenerator(lambda);
 
         // Reset: All measurement values at the server are reset
@@ -186,6 +192,7 @@ public class LoadGenerator implements Runnable {
         
         new Thread(loadGen).start();
         System.out.println("stared");
+
         // Packets are sent for duration ms before the sending is stopped
         Thread.sleep(duration);
 

@@ -5,7 +5,9 @@ package Server;
  *  
  * @author Roohi 
  */
-import org.apache.poi.util.SystemOutLogger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalTime;
 
@@ -13,6 +15,7 @@ public class ResetJob extends Job {
 
 	private boolean log = false;
 	Process p;
+	private final Logger logger = LoggerFactory.getLogger(ResetJob.class);
 
 	public ResetJob(long timeStamp, int repeat, boolean log) {
 		super(timeStamp, repeat);
@@ -28,12 +31,21 @@ public class ResetJob extends Job {
 		if (this.log) {
 			System.out.println("***************************************************************");
 			LocalTime time01 = LocalTime.now();
-			System.out.println("Time at atart of Reset job number 1 : " + time01);
+			System.out.println("Time at start of Reset job number 1 : " + time01);
 
 			System.out.println("Initializing HashMap in ResetJob");
-			for (int i = 0; i <= 500; i++) {
+			for (int i = 0; i <= 1000; i++) {
 				Server.hmap.put(i, 0);
 			}
+
+			if(Server.hmap.containsValue(null) || Server.hmap.isEmpty() ){
+				System.out.println("Initializing HashMap in ResetJob Second Time ");
+				for (int i = 0; i <= 1000; i++) {
+					Server.hmap.putIfAbsent(i, 0);//to avoid null values if hmap not initialized well
+					//Server.hmap.put(i, 0);
+				}
+			}
+			//logger.info(""+Server.hmap);
 
 			LocalTime time011 = LocalTime.now();
 			System.out.println("Time at end of Reset job number 1 : " + time011);
@@ -50,7 +62,7 @@ public class ResetJob extends Job {
 			}
 			// Capture FreqStats
 			try {
-				ProcessBuilder pb = new ProcessBuilder("/home/Ayman/Desktop/MM1-Software/Server/Server/src/FreqStatINTEL");
+				ProcessBuilder pb = new ProcessBuilder("Server/FreqStatINTEL");
 				//ProcessBuilder pb = new ProcessBuilder("/home/rootie/ServerMultiThreads/src/Server/FreqStatAMD");
 				p = pb.start();
 				LocalTime time02 = LocalTime.now();
@@ -67,8 +79,8 @@ public class ResetJob extends Job {
 		 */
 		else {
 			try {
-				ProcessBuilder pb = new ProcessBuilder("/home/Ayman/Desktop/MM1-Software/Server/Server/src/FreqStatINTEL");
-				//ProcessBuilder pb = new ProcessBuilder("/home/rootie/ServerMultiThreads/src/Server/FreqStatAMD");
+				ProcessBuilder pb = new ProcessBuilder("Server/FreqStatINTEL");
+				//ProcessBuilder pb = new ProcessBuilder("/home/rooter/ServerMultiThreads/src/Server/FreqStatAMD");
 				p = pb.start();
 			} catch (Throwable t1) {
 				// TODO Auto-generated catch block
@@ -100,13 +112,17 @@ public class ResetJob extends Job {
 			
 			Server.highest_state = 0;
 			System.out.println("Initializing HashMap in ResetJob");
-			for (int i = 0; i <= 500; i++) {
+			for (int i = 0; i <= 1000; i++) {
 				Server.hmap.put(i, 0);
 			}
+
 			LocalTime time011 = LocalTime.now();
 			System.out.println("Time at end of Reset job number 2: " + time011);
 			System.out.println("***************************************************************");
 			WorkerThreadPool.executorPool.shutdown();
+			Server.RUN = 0;
+			//System.out.println("after while ");
+			System.exit(0);
 		}
 
 	}

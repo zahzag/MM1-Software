@@ -39,8 +39,8 @@ public class CustomWorkerThreadPool extends ThreadPoolExecutor {
 			if (state >= Server.highest_state) {
 				Server.highest_state = state;
 			}
-			if(state<=500){
-				Server.hmap.compute(state, (k, v) -> (v==null) ? null : v + 1);
+			if(state<=1000){
+				Server.hmap.compute(state, (k, v) -> v + 1);
 			}else
 				System.out.println("OverFlow");
 			

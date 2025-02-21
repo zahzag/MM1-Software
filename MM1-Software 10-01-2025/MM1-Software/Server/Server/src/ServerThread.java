@@ -71,9 +71,12 @@ public class ServerThread implements Runnable {
 				Server.highest_state = state_before_entering;
 
 			}
-			if(state_before_entering<=500){
-				Server.hmap.compute(state_before_entering, (k, v) -> (v==null) ? 0 : v + 1);
-				System.out.println("stat :: "+ Server.hmap.get(state_before_entering));
+			if(state_before_entering<=1000){
+				//System.out.println("stat :: "+ state_before_entering);
+				//System.out.println("stat value:: "+ Server.hmap.get(state_before_entering));
+				Server.hmap.putIfAbsent(state_before_entering,0);
+				Server.hmap.compute(state_before_entering, (k, v) -> v + 1);
+
 			}else
 				System.out.println("OverFlow");
 

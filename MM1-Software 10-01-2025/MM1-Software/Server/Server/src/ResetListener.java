@@ -3,19 +3,24 @@ package Server;
  * Listens for Reset packets. Packages each packet into Resetjob class and add's to the executorPool's queue.
  * Sets the log flag to true or false based on the time of it's arrival. 
  */
-import org.apache.poi.util.SystemOutLogger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.*;
 
 public class ResetListener implements Runnable {
 
+	private static final Logger log = LoggerFactory.getLogger(ResetListener.class);
 	private DatagramSocket resetSocket;
 	private int resetPort = 9950;
+	//private int resetPort = 9920;
 	private byte[] resetBuffer;
 	private DatagramPacket resetPacket;
 	private int state;
-	private String ipaddr = "10.0.0.2";
+	//private String ipaddr = "10.0.0.2";
+	private String ipaddr = "127.0.0.1";
 
 	/*
 	*public ResetListener() {
@@ -34,24 +39,22 @@ public class ResetListener implements Runnable {
 		} catch (SocketException e) {
 			e.printStackTrace();
 		} catch (UnknownHostException e) {
-            throw new RuntimeException("on server address IP "+e);
+            throw new RuntimeException("on server address IP "+ e);
         }
         this.state = Server.RUN;
 	}
 
 	public void run() {
 		System.out.println("ResetListener running...");
+
 		while (this.state == Server.RUN) {
 			System.out.println(ipaddr);
 			resetBuffer = new byte[128];
-			resetPacket = new DatagramPacket(resetBuffer,resetBuffer.length);
-			System.out.println("test1");
+			resetPacket = new DatagramPacket(resetBuffer, resetBuffer.length);
 
 			try {
-				System.out.println("test2");
-
 				resetSocket.receive(resetPacket);
-				System.out.println("packet recieved");
+				//System.out.println("packet recieved");
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -66,17 +69,31 @@ public class ResetListener implements Runnable {
 				System.out.println("RESET JOB 1 ADDED in the start of the queue");
 //				Server.enterSystem.add((long) 0);
 				WorkerThreadPool.executorPool.execute(new ResetJob(System.nanoTime(), 0, true));
+				int i=0;
+				while(WorkerThreadPool.executorPool == null && i<10){
+					log.info("WorkerThreadPool is null");
+					WorkerThreadPool.executorPool.execute(new ResetJob(System.nanoTime(), 0, true));
+					i++;
+				}
 
-			} else{
+			} else {
 
 				System.out.println("RESET JOB 2 ADDED in the end of the queue");
 //				Server.enterSystem.add((long) 0);
 				WorkerThreadPool.executorPool.execute(new ResetJob(System.nanoTime(), 0, false));
-			}
-
+				int i=0;
+				while(WorkerThreadPool.executorPool == null && i<10){
+					log.info("WorkerThreadPool is null");
+					WorkerThreadPool.executorPool.execute(new ResetJob(System.nanoTime(), 0, false));
+					i++;
+				}
 			}
 
 		}
 
-	}
+		}
+
+
+
+}
 

@@ -11,7 +11,7 @@ public class JobData {
     private long calcTime;
     private long packetLength;
     private long responseTime;
-    
+    private long cpuTime;
     public void setCalcTime (long calcTime) {
         this.calcTime = calcTime;
     }
@@ -23,6 +23,7 @@ public class JobData {
     public void setResponseTime (long responseTime) {
         this.responseTime = responseTime;
     }
+    public void setCpuTime(long cpuTime){this.cpuTime=cpuTime;}
     
     public long getCalcTime () {
         return calcTime;
@@ -35,4 +36,5 @@ public class JobData {
     public long getResponseTime () {
         return responseTime;
     }
+    public long getCpuTime(){return cpuTime;}
 }
