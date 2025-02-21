@@ -80,7 +80,7 @@ for ((freq=$min_freq;freq<=$max_freq;freq=freq+100000));do
           python3 ../scripts/add_to_excel.py "workbook.xlsx" 13 "$utilization"
           #----------------------------------------------------------------------
 
-          printf "system sleeping for 3 min \n"
+          printf "system sleeping for 2 min \n"
           sleep 2m
         done
 	
