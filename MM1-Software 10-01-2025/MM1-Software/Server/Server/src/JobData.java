@@ -3,7 +3,7 @@ package Server;
 /**
  * Stores the measurement values for a Job.
  * 
- * @author Kirschner
+ * @author Ayman Zahir
  *
  */
 public class JobData {

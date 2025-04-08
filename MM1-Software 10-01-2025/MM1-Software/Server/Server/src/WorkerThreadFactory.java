@@ -4,7 +4,7 @@ import java.util.concurrent.ThreadFactory;
 /**
  * This class implements a thread factory for worker threads.
  * 
- * @author Kirschner
+ * @author Ayman Zahir
  *
  */
 public class WorkerThreadFactory implements ThreadFactory {

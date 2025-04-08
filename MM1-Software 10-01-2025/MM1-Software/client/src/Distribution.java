@@ -7,7 +7,7 @@ import java.lang.Math;
 
 /**
  * Class with method for calculation exponentially distributed integers.  
- *
+ * @author Ayman Zahir
  */
 public class Distribution extends Random {
 

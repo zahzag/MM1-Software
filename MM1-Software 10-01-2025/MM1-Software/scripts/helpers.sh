@@ -1,26 +1,32 @@
 #!/bin/bash
 
-run_system() {
-
-  cd build
-
-  export CLASSPATH="../Server/Server/lib/*:."
-
-  java Server.Server &
-
-  taskset -c 8 java client.LoadGenerator
-
-}
+#run_system() {
+#
+#  cd build
+#
+#  export CLASSPATH="../Server/Server/lib/*:."
+#
+#  java Server.Server &
+#
+#  taskset -c 8 java client.LoadGenerator
+#
+#}
 
 configure_cpu_performance() {
   cpu="$1"
-  frequency="$2"
-  governor="userspace"
+  governor="$2"
+  min_frequency="$3"
+  max_frequency="$4"
 
-  echo "setting cpu : $cpu to frequency : $frequency "Hz" , governor : $governor "
-
-  sudo cpupower --cpu "$cpu" frequency-set -g userspace -d $frequency -u $frequency
-  sudo cpufreq-set --cpu "$cpu" -f $frequency
+  if [[ $governor == *"userspace"* ]]; then
+    echo "setting cpu : $cpu to frequency : $min_frequency "Hz" , governor : $governor "
+  sudo cpupower --cpu "$cpu" frequency-set -g userspace -d $min_frequency -u $max_frequency
+  sudo cpufreq-set --cpu "$cpu" -f $min_frequency
+  fi
+  if [[ $governor == *"ondemand"* ]]; then
+    echo "setting cpu : $cpu to frequency : $min_frequency "Hz" -> $max_frequency "Hz", governor : $governor "
+      sudo cpupower --cpu "$cpu" frequency-set -g $governor -d $min_frequency -u $max_frequency
+  fi
   #cpupower --cpu $cpu frequency-info
 }
 

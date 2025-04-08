@@ -3,7 +3,7 @@ package Server;
 /**
  * This class represents a ResetJob. ResetJob's are received before and after the arrival of Job packets.
  *  
- * @author Roohi 
+ * @author Ayman Zahir
  */
 
 import org.slf4j.Logger;
@@ -41,12 +41,10 @@ public class ResetJob extends Job {
 			if(Server.hmap.containsValue(null) || Server.hmap.isEmpty() ){
 				System.out.println("Initializing HashMap in ResetJob Second Time ");
 				for (int i = 0; i <= 1000; i++) {
-					Server.hmap.putIfAbsent(i, 0);//to avoid null values if hmap not initialized well
-					//Server.hmap.put(i, 0);
+					Server.hmap.putIfAbsent(i, 0); //to avoid null values if hmap not initialized well
 				}
 			}
 			//logger.info(""+Server.hmap);
-
 			LocalTime time011 = LocalTime.now();
 			System.out.println("Time at end of Reset job number 1 : " + time011);
 			System.out.println("***************************************************************");
@@ -121,6 +119,9 @@ public class ResetJob extends Job {
 			System.out.println("***************************************************************");
 			WorkerThreadPool.executorPool.shutdown();
 			Server.RUN = 0;
+			/**
+			 * ensure the full system exiting when jobs are served
+			 */
 			//System.out.println("after while ");
 			System.exit(0);
 		}

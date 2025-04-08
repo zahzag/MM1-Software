@@ -1,9 +1,0 @@
-Metrics : 	measured_lambda = job_count/600.0;
-
-ServerThread : hmap.putIfAbsent:add fucntion
-
-
-activate cpu sleeping time 3min 
-
-
-set leasured_lamda = job_count/600.0 not job_count/300.0

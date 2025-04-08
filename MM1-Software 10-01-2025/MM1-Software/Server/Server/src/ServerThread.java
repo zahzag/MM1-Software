@@ -11,6 +11,7 @@ import java.net.SocketException;
 /**
  * This class implements the thread that waits for incoming jobs and gives them to executorPool.
  * Also captures the state of the system before the job enter's the system.
+ * @author Ayman Zahir
  */
 public class ServerThread implements Runnable {
 
@@ -66,14 +67,9 @@ public class ServerThread implements Runnable {
 
 
 			if (state_before_entering >= Server.highest_state) {
-//				System.out.println("stat befor entering :: "+ state_before_entering);
-//				System.out.println("server highest state:: "+ Server.highest_state);
 				Server.highest_state = state_before_entering;
-
 			}
 			if(state_before_entering<=1000){
-				//System.out.println("stat :: "+ state_before_entering);
-				//System.out.println("stat value:: "+ Server.hmap.get(state_before_entering));
 				Server.hmap.putIfAbsent(state_before_entering,0);
 				Server.hmap.compute(state_before_entering, (k, v) -> v + 1);
 

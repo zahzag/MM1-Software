@@ -14,14 +14,13 @@ import java.net.UnknownHostException;
 /**
  * Sends packets to a server with rate lambda and packet size repeat.
  * 
- * @author lovasz, Kirschner
+ * @author Ayman Zahir
  */
 public class LoadGenerator implements Runnable {
 
     private DatagramSocket resetBroadcastSocket;
     private DatagramSocket loadGeneratorSocket;
-    
-    
+
     private double lambda;
     private static int duration;
     private static int repeat;
@@ -32,9 +31,7 @@ public class LoadGenerator implements Runnable {
     private InetAddress serverIPAddress;
     
     private static final int jobListenerPort = 9999;
-    //private static final int jobListenerPort = 9995;
     private static final int resetListenerPort = 9950;
-    //private static final int resetListenerPort = 9920;
 
     private static final String serverIP = "10.0.0.2";//server address
     //private static final String serverIP = "127.0.0.1";//local address
@@ -86,10 +83,10 @@ public class LoadGenerator implements Runnable {
     	List<Long> repeatTimes = new LinkedList<Long>();
         while (this.state == RUN) {
         //packet with exponentially distributed integer is sent to the server
-	        //to make the repeat distributed exponentially between 50 Million and 80 Million , then the random ditrubuted number should be [1,1.6] => min=1*50M , max = 1.6*50M=80M
+	        //to make the repeat distributed exponentially between 1 Million and 1.6 Million , then the random ditrubuted number should be [1,1.6] => min=1*1M , max = 1.6*1M=1.6M
             double nextExpNumber=dist.nextExponentialRepeat();
             long service_repeat_time = Math.round(nextExpNumber * this.repeat);
-//	    System.out.println("Job Processed : "+(counter+1)+", Exponentially Repeat Value : " + service_repeat_time);
+//	        System.out.println("Job Processed : "+(counter+1)+", Exponentially Repeat Value : " + service_repeat_time);
             byte[] buffer = Long.toString(service_repeat_time).getBytes();
             //System.out.println("service_repeat_time : "+ service_repeat_time);
             try {
@@ -99,13 +96,14 @@ public class LoadGenerator implements Runnable {
                 e.printStackTrace();
             }
 
-            // The number of packets already sent
+            // The number of packets already sent : number of jobs
             counter++;
             //sendTimes.add(System.currentTimeMillis());
             repeatTimes.add(service_repeat_time);
             
             // calculation of the exponentially distributed waiting time before the next packet is sent
             rate = dist.nextExponential(1.0 / (double) lambda);
+            //ensure that repeat not null
             if (rate == 0)
                 rate = 1;
 
@@ -150,8 +148,7 @@ public class LoadGenerator implements Runnable {
      * @throws IOException
      * @throws InterruptedException
      */
-    public static void main(String[] args) throws UnknownHostException,
-            IOException, InterruptedException {
+    public static void main(String[] args) throws UnknownHostException,IOException, InterruptedException {
         
         double lambda = Double.parseDouble(args[0]);
         duration = Integer.parseInt(args[1]);

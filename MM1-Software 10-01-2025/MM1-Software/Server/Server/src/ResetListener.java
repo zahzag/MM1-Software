@@ -1,7 +1,8 @@
 package Server;
-/*
+/**
  * Listens for Reset packets. Packages each packet into Resetjob class and add's to the executorPool's queue.
- * Sets the log flag to true or false based on the time of it's arrival. 
+ * Sets the log flag to true or false based on the time of it's arrival.
+ * @author Ayman Zahir
  */
 
 import org.slf4j.Logger;

@@ -12,8 +12,8 @@ import java.security.NoSuchAlgorithmException;
  * time stamp stands for the arrival of the job at the server. The repeat value is an exponentially
  * distributed integer. This number decides the workload of each job. The calc() implements the processing
  * logic of the job.
- * @author Roohi,Kirschner
- * */
+ * @author Ayman Zahir
+ */
 
 public class Job implements Runnable {
 	public static final Logger logger = LoggerFactory.getLogger(Job.class);
@@ -55,11 +55,6 @@ public class Job implements Runnable {
 	private void calc(int repeat) throws NoSuchAlgorithmException {
 		//		startTimeStampServiceTime = System.nanoTime();
 
-//			for(int k = 0; k < this.repeat; k++) {
-//				Math.pow(Math.pow(Math.cbrt(Math.pow(100,20)), Math.cbrt(Math.pow(55,75))), Math.pow( Math.cbrt(Math.pow(55,75)),  Math.cbrt(Math.pow(55,75))));
-//				//Math.pow(Math.pow(10,10),Math.pow(10,10));
-//			}
-
 		//check the cpu id used to process the job
 		int cpuCore = CpuCoreID.CLibrary.INSTANCE.sched_getcpu();
 		logger.info("Job CPU Core: " + cpuCore);
@@ -74,36 +69,21 @@ public class Job implements Runnable {
 
 			// Start cpuTime in nanoseconds
 			 startTimeCpuTime = threadMXBean.getCurrentThreadCpuTime();
-/*
-				// Perform the job
-				double result =0.0;
-				for (double i = 0; i < this.repeat; i++) {
-					result += 1 / Math.pow(i, 2);
-				}
-				*/
-/*
-    for(int k = 0; k < this.repeat; k++) {
-			    Math.pow(Math.pow(Math.cbrt(40), Math.cbrt(20)), Math.pow(Math.cbrt(40), Math.cbrt(20)));
-		    }
-*/
-     for (long i = 1; i <= repeat; i++) {
-          //  double temp =Math.sin(i) * Math.cos(i) / Math.pow(i,i);
-      
-      		Math.pow(Math.sin(i)*Math.cos(i)/Math.pow(i,i),i); //repeat = 1M * 1.33
-		   //Math.pow(Math.pow(Math.sin(i) * Math.cos(i), Math.pow(Math.sin(i),Math.cos(i))*Math.tan(i*i)),Math.pow(Math.pow(Math.pow(i,i),Math.sqrt(i)),Math.pow(Math.pow(i,i),Math.sqrt(i)))); //repeat = 300000 * 1.33
 
-	 }
+			/** job */
 
+		 for (long i = 1; i <= repeat; i++) {
+				//  double temp =Math.sin(i) * Math.cos(i) / Math.pow(i,i);
+				Math.pow(Math.sin(i)*Math.cos(i)/Math.pow(i,i),i); //repeat = 1M * 1.6
+				//Math.pow(Math.pow(Math.sin(i) * Math.cos(i), Math.pow(Math.sin(i),Math.cos(i))*Math.tan(i*i)),Math.pow(Math.pow(Math.pow(i,i),Math.sqrt(i)),Math.pow(Math.pow(i,i),Math.sqrt(i)))); //repeat = 300000 * 1.33
 
-
-
+	  	 }
 			// Get end CPU time
 			endTimeCpuTime = threadMXBean.getCurrentThreadCpuTime(); // In nanoseconds
 
 		//end computing execution time
 		endTimeStampServiceTime = System.nanoTime();
-
-
+		/**this else is if the system couldn't compte the cpu time */
 		} else {
 			System.out.println("Thread CPU time measurement is not supported on this JVM.");
 		}

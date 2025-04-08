@@ -4,15 +4,15 @@ cpu=$1
 runs=$2
 min_freq=$3
 max_freq=$4
-
+governor="userspace"
 
 for ((freq=$min_freq;freq<=$max_freq;freq=freq+100000));do
 
 # run the tests $runs time
-  configure_cpu_performance $cpu $freq
+  configure_cpu_performance $cpu $governor $freq $freq
   read increased_lamda max_lamda <<< $(increase_lamda $freq )
   #for lamda in $(seq 1 1 3); do #lamda 1 , 4 and 7
-  for lamda in $(seq -f "%.2f" $increased_lamda $increased_lamda $max_lamda); do
+  for lamda in $(seq -f "%.2f" $incresed_lamda $increased_lamda $max_lamda); do
   #kill any java process to be sure
   sudo kill -9 $(pgrep java)
 

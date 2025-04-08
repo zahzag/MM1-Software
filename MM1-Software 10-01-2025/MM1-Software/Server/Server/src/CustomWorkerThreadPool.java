@@ -4,7 +4,7 @@ package Server;
  * This class implements afterExecute() method. It captures the
  * state of system after the job has departed and accordingly increments
  * the state counter inside the HashMap.
- * @author Roohi 
+ * @author Ayman Zahir
  */
 
 import java.util.concurrent.BlockingQueue;

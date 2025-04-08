@@ -1,7 +1,7 @@
 package Server;
 /**
  * Notify's when a job is not executed by ThreadPoolExecutor.
- * @author Roohi 
+ * @author Ayman Zahir
  */
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;

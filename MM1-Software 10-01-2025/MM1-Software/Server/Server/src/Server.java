@@ -12,7 +12,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 /**
  * The Server with the main class for starting it.
  * 
- * @author Kirschner,Roohi
+ * @author Ayman Zahir
  *
  */
 public class Server {
@@ -53,13 +53,12 @@ public class Server {
 
 
 		lambda = Double.parseDouble(args[0]);
-		//lambda = 1;
+
 		//check cpu availability
 		int availableProcessors = Runtime.getRuntime().availableProcessors();
 		// Get the number of CPU cores
 		System.out.println("Available processors: " + availableProcessors);
 		System.out.println(AffinityLock.dumpLocks());
 		new Server(9999);
-		//new Server(9995);
 	}
 }

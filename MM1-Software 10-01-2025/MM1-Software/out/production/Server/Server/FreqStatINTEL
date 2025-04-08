@@ -1,9 +1,0 @@
-#!/bin/bash
-taskset -c 3 date  >> /home/rootie/ServerMultiThreads/bin/Freq_1.csv;
-taskset -c 3 echo "Time_in_Transition" >> /home/rootie/ServerMultiThreads/bin/Freq_1.csv;
-taskset -c 3 cat -n /sys/devices/system/cpu/cpu15/cpufreq/stats/time_in_state >> /home/rootie/ServerMultiThreads/bin/Freq_1.csv;
-#taskset -c 2 echo "Total_Transition" >> /home/rootie/ServerMultiThreads/bin/Freq_1.csv;
-#taskset -c 2 cat -n /sys/devices/system/cpu/cpu15/cpufreq/stats/total_trans >> /home/rootie/ServerMultiThreads/bin/Freq_1.csv;
-taskset -c 3 echo "Transition_Table" >> /home/rootie/ServerMultiThreads/bin/Freq_1.csv;
-taskset -c 3 cat -n /sys/devices/system/cpu/cpu15/cpufreq/stats/trans_table >> /home/rootie/ServerMultiThreads/bin/Freq_1.csv;
-

@@ -3,7 +3,7 @@ package Server;
 /**
  * This class calculates both measured and modeled metric's such as SteadyStateProbabilities,
  * MeanResponseTime, Power and Utilization etc. Also store's them into files.
- * @author Roohi
+ * @author Ayman zahir
  */
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -30,7 +30,7 @@ public class Metrics {
 	public static long job_count;
 	public static long pool_job_count;
 	public static double measured_lambda;
-	public static double service_rate;
+	public static double mean_service_rate;
 	public static double mean_response_time;
 	public static double m_power;
 	public static double utilization;
@@ -165,7 +165,7 @@ public class Metrics {
 						row.createCell(1).setCellValue(Server.lambda);
 						row.createCell(2).setCellValue(measured_lambda);
 						row.createCell(3).setCellValue(MeanSrvcTime/1000000);
-						row.createCell(4).setCellValue(service_rate);
+						row.createCell(4).setCellValue(mean_service_rate);
 						row.createCell(5).setCellValue(mean_response_time);
 						row.createCell(6).setCellValue(MRT);
 						row.createCell(7).setCellValue(MeanRspTime/1000000);
@@ -290,39 +290,39 @@ public class Metrics {
 
 	private static void modelled_data() {
 		//Performance AMD
-		//p_idle = 108.034;
-		//p_loaded = 121.159;
+			//p_idle = 108.034;
+			//p_loaded = 121.159;
 		//Powersave AMD
-		//p_idle = 107.33;
-		//p_loaded = 112.07;
+			//p_idle = 107.33;
+			//p_loaded = 112.07;
 		//Ondemand AMD
-		//p_idle = 77.33;
-		//p_loaded = 121.53;
+			//p_idle = 77.33;
+			//p_loaded = 121.53;
 		//Performance INTEL
-		//p_idle = 108.034;
-		//p_loaded = 121.159;
+			//p_idle = 108.034;
+			//p_loaded = 121.159;
 		//Powersave INTEL
-		//p_idle = 107.33;
-		//p_loaded = 112.07;
+			//p_idle = 107.33;
+			//p_loaded = 112.07;
 		//Ondemand INTEL
-		p_idle = 106.29;
-		p_loaded = 117.28;
+			p_idle = 106.29;
+			p_loaded = 117.28;
 
 		job_count = Server.counter;
 		System.out.println("No. of Jobs Served : " + job_count);
 		System.out.println("Modelled Lambda : " + Server.lambda);
 		measured_lambda = job_count/600.0;//set according to the duration of the test run otherwise calculations will be wrong : 600.0
 		System.out.println("Measured Lambda : " + measured_lambda);
-		mean_service_time = MeanSrvcTime/1000000;//Milliseconds
+		mean_service_time = MeanSrvcTime/1000000;//Nanosecond to Milliseconds
 		System.out.println("Measured Mean Service Time : " + mean_service_time + " Milliseconds");
-		service_rate = 1000000000 / MeanSrvcTime;//Milliseconds to seconds
-		System.out.println("Modelled Service rate in Seconds: " + service_rate + " Jobs/sec");
-		mean_response_time = (1/service_rate)/(1-(measured_lambda/service_rate))*1000;
+		mean_service_rate = 1000000000 / MeanSrvcTime;//Milliseconds to seconds
+		System.out.println("Modelled Service rate in Seconds: " + mean_service_rate + " Jobs/sec");
+		mean_response_time = (1/mean_service_rate)/(1-(measured_lambda/mean_service_rate))*1000;
 		System.out.println("Modelled Mean Response Time : "+ mean_response_time + " Miliseconds");
 		System.out.println("Measured Mean Response Time: " + MeanRspTime/1000000 + " Miliseconds");
-		m_power = ((1 - (measured_lambda / service_rate)) * p_idle) + ((measured_lambda / service_rate) * p_loaded);
+		m_power = ((1 - (measured_lambda / mean_service_rate)) * p_idle) + ((measured_lambda / mean_service_rate) * p_loaded);
 		System.out.println("Modelled Power Consumption : " + m_power);
-		utilization = (measured_lambda / service_rate) * 100;
+		utilization = (measured_lambda / mean_service_rate) * 100;
 		System.out.println("Modelled Utilization : " + utilization);
 
 		System.out.println("Measured cpu time "+ MeanCpuTime/1_000_000.0);
