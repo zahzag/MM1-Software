@@ -272,6 +272,3 @@ if we didn’t disable SPeedStep , the cpu will always change his frequency even
 
 # Contribution
 Feel free to contribute more resources or suggest updates by opening a pull request or issue in this repository.
-
-# Author 
--- ZAHIR Ayman
