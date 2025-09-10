@@ -11,7 +11,7 @@ import java.net.SocketException;
 /**
  * This class implements the thread that waits for incoming jobs and gives them to executorPool.
  * Also captures the state of the system before the job enter's the system.
- * @author Ayman Zahir
+ * @author zahzag
  */
 public class ServerThread implements Runnable {
 
@@ -88,3 +88,4 @@ public class ServerThread implements Runnable {
 		}
 	}
 }
+
