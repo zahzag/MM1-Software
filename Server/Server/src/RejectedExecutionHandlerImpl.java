@@ -1,7 +1,7 @@
 package Server;
 /**
  * Notify's when a job is not executed by ThreadPoolExecutor.
- * @author Ayman Zahir
+ * @author zahzag
  */
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -11,3 +11,4 @@ public class RejectedExecutionHandlerImpl implements RejectedExecutionHandler {
 		System.out.println(r.toString() + " is rejected");
 	}
 }
+
