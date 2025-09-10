@@ -3,7 +3,7 @@ package Server;
 /**
  * This class represents a ResetJob. ResetJob's are received before and after the arrival of Job packets.
  *  
- * @author Ayman Zahir
+ * @author zahzag
  */
 
 import org.slf4j.Logger;
