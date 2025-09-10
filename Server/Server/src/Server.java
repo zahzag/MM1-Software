@@ -12,7 +12,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 /**
  * The Server with the main class for starting it.
  * 
- * @author Ayman Zahir
+ * @author zahzag
  *
  */
 public class Server {
