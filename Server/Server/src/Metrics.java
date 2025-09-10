@@ -3,7 +3,7 @@ package Server;
 /**
  * This class calculates both measured and modeled metric's such as SteadyStateProbabilities,
  * MeanResponseTime, Power and Utilization etc. Also store's them into files.
- * @author Ayman zahir
+ * @author zahzag
  */
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
