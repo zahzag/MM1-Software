@@ -3,7 +3,7 @@ package Server;
 /**
  * Stores the measurement values for a Job.
  * 
- * @author Ayman Zahir
+ * @author zahzag
  *
  */
 public class JobData {
@@ -38,3 +38,4 @@ public class JobData {
     }
     public long getCpuTime(){return cpuTime;}
 }
+
