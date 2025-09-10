@@ -2,12 +2,12 @@
 # MM1-Software
 the implementation of paper " Modelling performance and power consumption of utilization-based DVFS using M-M-1 queues" 
 # client
-The client-server java implementation represent the M/M/1-FCFS queuing system. the client role is to send jobs to server exponentially, using the variable lamda , repeat and duration .  lamda is the mean arrival rate (jobs/sec ) , repeat is the service rate (jobs/sec) and duration or the size of arrival queue , the duration tha the client send jobs to the server (sec)
+The client-server java implementation represent the M/M/1-FCFS queuing system. the client role is to send jobs to server exponentially, using the variable lamda , repeat and duration .  lamda is the mean arrival rate (jobs/sec ) , repeat is the service rate (jobs/sec) and duration or the size of arrival queue , the duration that the client send jobs to the server (sec)
 # server
-The server role is to accept jobs and handl one by one using single cpu core , and compute the performance metrics such as service time , service rate , mean response time , utilization caused by executed workload and many other metrics 
+The server role is to accept jobs and handle one by one using single CPU core , and compute the performance metrics such as service time , service rate , mean response time , utilization caused by executed workload and many other metrics 
 
 # hardware preparation 
-to prepare the hardware for the implementation , we should , fix the server ip address , shiled the cpu-core  ,disable Simultaneaous multi-threading (SMT) , disable turbo-boost , and hyper threading  ,pin the process on it, set the cpu governor to “userspace “ ( to not change frequency ) ,fix the frequency for each test , compute mean consumed power , and choose the mean arrival rate that should not unstabilize the system ( the cpu utilieation exceed 100% ) .
+to prepare the hardware for the implementation , we should , fix the server ip address , shiled the cpu-core  ,disable Simultaneaous multi-threading (SMT) , disable turbo-boost , and hyper threading  ,pin the process on it, set the CPU governor to “ondemand “, fix the frequency for each test, in the meanwhile , power consumption , frequency and utilization should be monitored in parallel, and choose the mean arrival rate that should not unstabilize the system ( CPU utilieation < 100% ) .
 
 
 # fix the server ip : 
@@ -39,18 +39,17 @@ shielding CPU depends to each operating system , when the CPU is shielded , the 
 ### •	Show shielded cpus : sudo cset shield --shield -v 
 
 ### NB: 
-by using cset shield , the server can’t use the cpu 3 directly , you should pin the cpu to the server using “taskset -c 3 Server.Server” , but when we pin the cpu to the server , the thread used to handl jobs and the threads used to listen to client requests will both be executed oncpu 3 , and this is not a fully cpu isolation , which mean using cset shiled is not a good idea for this simulation
-
+by using cset shield , the server can’t use the CPU 3 directly , you should pin the CPU to the server using “taskset -c 3 Server.Server” , but when we pin the CPU to the server , the thread used to handl jobs and the threads used to listen to client requests will both be executed on CPU 3 , and this is not a fully CPU isolation , which mean using cset shiled is not a good idea for this simulation
 
 # CPU Pinning 
-To pin process to a cpu core we will use the “taskset” tool,
-## •	Pin server to cpu 3 
+To pin process to a CPU core we will use the “taskset” tool,
+## •	Pin server to CPU 3 
 ### o	taskset -c 3 java Server.Server
-## •	pin client to another cpu core to ensure that it will not disturb the server process 
+## •	pin client to another CPU core to ensure that it will not disturb the server process 
 ### o	taskset -c 8 java client.LoadGenrator 
 
 ## NB : 
-pinning the server process to cpu 3 meand that all the java process will use just cpu 3 , which mean the both , listening thread and handling jobs thread will use the same core , which lead to non isolation of jobs handling , to ensure that cpu 3 will be used just for jobs handling , there is a java library named “Affinity” on server that look for a shielded cpu and pin it directly to jobs handling . there is no need to pin cpu core for server .
+pinning the server process to CPU 3 meand that all the java process will use just CPU 3 , which mean the both , listening thread and handling jobs thread will use the same core , which lead to non isolation of jobs handling , to ensure that CPU 3 will be used just for jobs handling , there is a java library named “Affinity” on server that look for a shielded CPU and pin it directly to jobs handling . there is no need to pin CPU core for server.
 
 ## Simultaneous multi-threading (SMT)
 
@@ -74,7 +73,7 @@ SMT is a function of power systems servers that allows multiple logicale CPUs sh
 
 # Turbo boost 
 
-Turbo Boost is an Intel technology that dynamically increases the clock speed of a processor when the workload demands it, as long as the processor is operating below its power, current, and temperature limits. For our experiments, the CPU should not increase the cpu clock speed dynamically or go to the highest frequency .
+Turbo Boost is an Intel technology that dynamically increases the clock speed of a processor when the workload demands it, as long as the processor is operating below its power, current, and temperature limits. For our experiments, the CPU should not increase the CPU clock speed dynamically or go to the highest frequency .
 
 ## For Fedora & ubuntu : 
 
@@ -111,7 +110,7 @@ Intel pstate is a the voltage-frequency control states used in modern linux kern
 #### 2.	set status to “active”
 
 ## NB :
-if we disable intel_pstate from BIOS , we will not have access to monitor cpu frequency or change it or even change the governor .Hence, the only way to disable intel_pstate it to set it to “passive” .
+if we disable intel_pstate from BIOS , we will not have access to monitor CPU frequency or change it or even change the governor .Hence, the only way to disable intel_pstate it to set it to “passive” .
 
 # Intel Speed step 
 
@@ -125,23 +124,27 @@ Is a technology that allows the CPU to dynamically adjust CPU clock speed and vo
 
 # CPU Governors
 
-CPU governors are software mechanisms that control cpu frequency-scaling and voltage in response to workload . especially In systems with dynamic frequency scaling, there is many cpu governors : Performance , powersave, ondemand, conservative , schedutil , userspace and interactive . on this experiment  , we focus on userspace , because the frequency should be fix , to have the same Mean-Service-Rate on all tests  for each frequency.
+CPU governors are software mechanisms that control CPU frequency-scaling and voltage in response to workload . especially In systems with dynamic frequency scaling, there is many CPU governors : Performance , powersave, ondemand, conservative , schedutil , userspace and interactive . on this experiment  , we focus on **OnDemand**.
 
 ## For Fedora & ubuntu :
-### Cpupower-gui
+### cpupower-gui
 #### •	Install cpupower-gui
 ##### o	Fedora : Sudo dnf install cpupower-gui
 ##### o	Ubuntu : Install cpupower-gui : sudo apt-get install cpupower-gui 
 #### •	Lunching : cpupower-gui
-#### •	choose the cpu 3 and change the governot to userspace , then choose the frequency 
+#### •	choose the CPU 3 and change the governot to OnDemand , then then frequency should scale within minFreq and maxFreq
 
-### Cpupower
-#### •	Change governor: sudo cpupower --cpu 3 frequency-set -g userspace
-#### •	Change frequency intervale : sudo cpupower --cpu 3 frequency-set -d 1.2Ghz -u 1.2Ghz 
+### Cpupower (recommended)
+#### •	Change governor: sudo cpupower --cpu 3 frequency-set -g ondemand
+#### •	Change frequency intervale : sudo cpupower --cpu 3 frequency-set -d 0.8Ghz -u 2.1Ghz 
 #### •	Show cpu current frequency : 
 ##### o	sudo cpupower --cpu 3 frequency-info 
 ##### o	Or : current governor : cat /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor
 ##### o	Current frequency:  cat /sys/devices/system/cpu/cpu3/cpufreq/scaling_cur_frequency
+
+### ondemand governor parameters (example sampling_rate=10ms and threshold=75%) 
+#### • sampling_rate : echo 10000 | sudo tee /sys/devices/system/cpu/cpufreq/ondemand/sampling_rate
+#### • up_threshold : echo 75 | sudo tee /sys/devices/system/cpu/cpufreq/ondemand/up_threshold
 
 
 # Connect client  with server 
@@ -182,10 +185,10 @@ the client also should be in the same network , let’s give it 10.0.0.1/24
 ### test connection from client: ping 10.0.0.2/24
 
 # CPU utilization 
-Cpu utilization indicates the amount of load handled by individual core to handl the process , on our situation , is the load reached by cpu core to handle jobs 
+Cpu utilization indicates the amount of load handled by individual core to handl the process , on our situation , is the load reached by CPU core to handle jobs 
 mpstat
-To monitor the utilization of cpu 3 while server running ( handling jobs ) , we use the “mpstat” tool , we we focus one “%usr” parameter 
-Monitor the cpu core 3 utilization each 1 second and collect results on cpu3 file 
+To monitor the utilization of CPU 3 while server running ( handling jobs ) , we use the “mpstat” tool , we we focus one “%usr” parameter 
+Monitor the CPU core 3 utilization each 1 second and collect results on CPU3 file 
 
 ## Fedora:
 ### •	Install mpstat : 
@@ -199,12 +202,13 @@ Monitor the cpu core 3 utilization each 1 second and collect results on cpu3 fil
 #### o	sudo systemctl enable sysstat && sudo systemctl start sysstat
 ### •	mpstat -P 3 1 > cpu3.log
 
-At the end of server jobs handling , the mpstat calculate the average cpu core utilization on this time intervale , then we took this result and add to excel file using a python script
+At the end of server jobs handling , the mpstat calculate the average CPU core utilization on this time intervale , then we took this result and add to excel file using a python script
 
 # CPU Power consumption
 The CPU power consumption is the consumed power by CPU core 3 while the server handling jobs 
 There are several tools that monito CPU power consumption , like powerstat , turbostat ..
-## Powerstat
+
+## Powerstat (recommended)
 Powerstat measures the power consumption of a laptop using the ACPI battery information. The output is like vmstat but also shows power consumption statistics.
 
 ### Fedora 
@@ -217,7 +221,7 @@ Powerstat measures the power consumption of a laptop using the ACPI battery info
 ##### o	sudo apt install powerstat
 #### •	powerstat -cDHRf 1 
 
-The problem with powerstat is that shows the power consumption of all CPU , not core by core , instead of turbostat that can gives the cpu core power consumption and also the whole cpu power consumption
+The problem with powerstat is that shows the power consumption of all CPU , not core by core , instead of turbostat that can gives the CPU core power consumption and also the whole CPU power consumption
 
 ## Turbostat
 turbostat is a powerful tool provided by Intel to monitor CPU frequency, power consumption, and other performance metrics. It is particularly useful for analyzing the behavior of Intel CPUs,
@@ -232,13 +236,14 @@ turbostat is a powerful tool provided by Intel to monitor CPU frequency, power c
 ##### o	sudo apt install linux-tools-common linux-tools-generic
 #### •	sudo turbostat --cpu 3 --interval 1 --show CorWatt --quiet --Summary -o core_power.log 
 
-we specifie the option “CorWatt” to show just the cpu Core 3 consumed power on Watt , the power consumption is monitored each second , 
-turbostat don’t gives the average power consumption , to compute the average power consumption of cpu 3  we have to compute it manually , this is why we collecte every power consumption values on core_power file . and after we used a small function to compute the average and the totale energy , and another python script to add those values to excel file 
+we specifie the option “CorWatt” to show just the CPU Core 3 consumed power on Watt , the power consumption is monitored each second, 
+turbostat don’t gives the average power consumption , to compute the average power consumption of CPU 3  we have to compute it manually , this is why we collecte every power consumption values on core_power file . and after we used a small function to compute the average and the totale energy , and another python script to add those values to excel file 
 
 # Job
 
 The job class define the structure of work job arriving from client . The calc method contains the CPU intensive calculation which is repeated as per the size of the Job . but should not reach the 100% utilization , it can reach the peak and go down directly , but not take a more than 1 second on the peak . 
-start simulation 
+
+# start simulation 
 
 before starting the simulation we should compile the server and client code to .class , specifying the class path of each package .
 NB : the working directory should be ./MM1-Software 
@@ -259,16 +264,17 @@ NB : the working directory should be ./MM1-Software
 ##### And 600000 is the duration of sending jobs to server (10 min)
 ##### And 1000000 is the repeat parameter which distributed exponentially between 1M and 1.6M to ensure the exponential jobs handling. Big repeat  lead to big workload 
 
-NB : the jobs arrival rate for each frequency should be always less than the service rate of this frequency , if is not , the system will fall on overflow , 
+NB : the jobs arrival rate for each frequency should be always less than the service rate (𝜆 < 𝜇), if is not the case, the system will fall on overflow.
 
-To compute the maximum arrival rate for each frequency , we lunch the system for the first time for each frequency , and take the mean service rate for each frequency , then we compute the service rate when the cpu utilization is 10% , 20%, 30%, … ,90% using the mathematical relation : arrival_rate = cpu_core_utilization*mean_service_rate . 
-After collecting arrival_rate values that we use 10%, 20%,... of cpucore using a chosen frequency , we collect them on an array and run for each frequency his arrival rate values ( lamdas) .
-After running the simulation , the client start sending jobs with specified mean arrival rate exponentially . the server accept each job with his length , and save it on a queue . by respecting the aspect of FCFS , the server start handling each job one by one .
+To compute the maximum arrival rate (𝜆) for each frequency , we lunch the system for the first time for each frequency , and take the mean service rate for each frequency (𝜇) , then we compute the service rate 𝜇 when the CPU utilization 𝜌 is 10% , 20%, 30%, … ,90% using the mathematical relation : arrival_rate 𝜆 = 𝜌 * 𝜇 
 
-When the jobs queue become empty , the server compute metrics like Mean service rate ,Mean response time , highest reached state, cpu time , execution time ,etc ; and save those results on a excel file named "wookbook.xlsx. 
+After collecting arrival_rate values that we use 10%, 20%,... of cpucore using a chosen frequency, we collect them on an array and run for each frequency his arrival rate values (𝜆).
 
-# NB :
-if we didn’t disable SPeedStep , the cpu will always change his frequency even if we use the governor ”userspace” and we fix the frequency , it will be changed always 
+Since we are focusing in this study on Ondemand governor with frequency within minFreq and maxFreq, choosen arrivale rates (𝜆) for each CPU utilization were those selected by maxFreq.
+
+After running the simulation , the client start sending jobs with specified mean arrival rate exponentially . the server accept each job with his length , and save it on a queue . by respecting the aspect of FCFS , the server start handling each job one by one.
+
+When client send the packet RESET2 and the server jobs queue become empty , the server compute metrics like Mean service rate ,Mean response time , highest reached state, CPU time , execution time ,etc ; and save those results on a excel file named "wookbook.xlsx. 
 
 # Contribution
 Feel free to contribute more resources or suggest updates by opening a pull request or issue in this repository.
