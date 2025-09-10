@@ -19,7 +19,7 @@ import static Server.Job.logger;
 /**
  * This class implements a Worker Thread Pool.
  *
- * @author Ayman Zahir
+ * @author zahzag
  *
  */
 public class WorkerThreadPool {
@@ -42,5 +42,6 @@ public class WorkerThreadPool {
 	}
 
 }
+
 
 
