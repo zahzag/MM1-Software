@@ -14,7 +14,7 @@ import java.net.UnknownHostException;
 /**
  * Sends packets to a server with rate lambda and packet size repeat.
  * 
- * @author Ayman Zahir
+ * @author zahzag
  */
 public class LoadGenerator implements Runnable {
 
@@ -220,3 +220,4 @@ public class LoadGenerator implements Runnable {
         }
     }
 }
+
