@@ -12,7 +12,7 @@ import java.security.NoSuchAlgorithmException;
  * time stamp stands for the arrival of the job at the server. The repeat value is an exponentially
  * distributed integer. This number decides the workload of each job. The calc() implements the processing
  * logic of the job.
- * @author Ayman Zahir
+ * @author zahzag
  */
 
 public class Job implements Runnable {
@@ -106,5 +106,6 @@ public class Job implements Runnable {
 	}
 
 }
+
 
 
