@@ -1,7 +1,7 @@
 package Server;
 /**
 *This class simplify communication with cpu
-*@author Ayman Zahir
+*@author zahzag
 *
 */
 import com.sun.jna.Library;
