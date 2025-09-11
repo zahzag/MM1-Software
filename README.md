@@ -22,22 +22,22 @@ set server address
 
 # cpu shielding 
 shielding CPU depends to each operating system , when the CPU is shielded , the OS will not use it , so it will be totally free
-## for fedora : 
+## for fedora: 
 ### 1.	sudo nano /etc/default/grub 
-#### •	add on the line : GRUB_CMDLINE_LINUX = “isolcpus=3 ” 
+#### •	add on the line: GRUB_CMDLINE_LINUX = “isolcpus=3 ” 
 #### •	when the cpuID = 3
 ### 2.	sudo grub2_mkconfig -o /boot/grub2/grub.cfg 
 ### 3.	reboot 
-## For ubuntu :
+## For ubuntu:
 ### 1.	sudo nano /etc/default/grub 
 #### •	add on the line:   GRUB_CMDLINE_LINUX = “isolcpus=3” 
 #### •	when the cpuID = 3
 ### 2.	sudo update-grub 
 ### 3.	reboot
 ## For Fedora & ubuntu 
-### •	Shield cpu 3 : Sudo cset shiled --cpu 3
+### •	Shield cpu 3: Sudo cset shiled --cpu 3
 ### •	Unshiled cpus: sudo cset shield –reset
-### •	Show shielded cpus : sudo cset shield --shield -v 
+### •	Show shielded cpus: sudo cset shield --shield -v 
 
 ### NB: 
 by using cset shield , the server can’t use the CPU 3 directly , you should pin the CPU to the server using “taskset -c 3 Server.Server” , but when we pin the CPU to the server , the thread used to handl jobs and the threads used to listen to client requests will both be executed on CPU 3 , and this is not a fully CPU isolation , which mean using cset shiled is not a good idea for this simulation
@@ -49,7 +49,7 @@ To pin process to a CPU core we will use the “taskset” tool,
 ## •	pin client to another CPU core to ensure that it will not disturb the server process 
 ### o	taskset -c 8 java client.LoadGenrator 
 
-## NB : 
+## NB: 
 pinning the server process to CPU 3 meand that all the java process will use just CPU 3 , which mean the both , listening thread and handling jobs thread will use the same core , which lead to non isolation of jobs handling , to ensure that CPU 3 will be used just for jobs handling , there is a java library named “Affinity” on server that look for a shielded CPU and pin it directly to jobs handling . there is no need to pin CPU core for server.
 
 ## Simultaneous multi-threading (SMT)
@@ -76,22 +76,22 @@ SMT is a function of power systems servers that allows multiple logicale CPUs sh
 
 Turbo Boost is an Intel technology that dynamically increases the clock speed of a processor when the workload demands it, as long as the processor is operating below its power, current, and temperature limits. For our experiments, the CPU should not increase the CPU clock speed dynamically or go to the highest frequency .
 
-## For Fedora & ubuntu : 
+## For Fedora & ubuntu: 
 
-### •	Disable turbo boost :
+### •	Disable turbo boost:
 
 #### echo 1 | sudo tee /sys/devices/system/cpu/intel_pstate/no_turbo
 
-#### Or : we can disable the turbo state permanently form BIOS
+#### Or: we can disable the turbo state permanently form BIOS
 ##### 1.	Reboot and access to BIOS configuration
 ##### 2.	Navigate to “Performance” section 
 ##### 3.	Uncheck the “enable intel turboBoost”option 
 ##### 4.	Click apply and exit 
 
-### •	Enbale  turbo boost :
+### •	Enbale  turbo boost:
 
 #### echo 0  | sudo tee /sys/devices/system/cpu/intel_pstate/no_turbo
-#### Or : we can enable the turbo state permanently form BIOS
+#### Or: we can enable the turbo state permanently form BIOS
 ##### 1.	Reboot and access to BIOS configuration
 #####  2.	Navigate to “Performance” section 
 #####  3.	Check the “enable intel turboBoost”option 
@@ -106,11 +106,11 @@ Intel pstate is a the voltage-frequency control states used in modern linux kern
 ### •	Disable intel_pstate:
 #### 1.	sudo nano /sys/devices/system/cpu/intel_pstate/status
 #### 2.	set status to “passive”
-### •	Enable instel_pstate :
+### •	Enable instel_pstate:
 #### 1.	sudo nano /sys/devices/system/cpu/intel_pstate/status
 #### 2.	set status to “active”
 
-## NB :
+## NB:
 if we disable intel_pstate from BIOS , we will not have access to monitor CPU frequency or change it or even change the governor .Hence, the only way to disable intel_pstate it to set it to “passive” .
 
 # Intel Speed step 
@@ -125,49 +125,49 @@ Is a technology that allows the CPU to dynamically adjust CPU clock speed and vo
 
 # CPU Governors
 
-CPU governors are software mechanisms that control CPU frequency-scaling and voltage in response to workload . especially In systems with dynamic frequency scaling, there is many CPU governors : Performance , powersave, ondemand, conservative , schedutil , userspace and interactive . on this experiment  , we focus on **OnDemand**.
+CPU governors are software mechanisms that control CPU frequency-scaling and voltage in response to workload . especially In systems with dynamic frequency scaling, there is many CPU governors: Performance , powersave, ondemand, conservative , schedutil , userspace and interactive . on this experiment  , we focus on **OnDemand**.
 
-## For Fedora & ubuntu :
+## For Fedora & ubuntu:
 ### cpupower-gui
 #### •	Install cpupower-gui
-##### o	Fedora : Sudo dnf install cpupower-gui
-##### o	Ubuntu : Install cpupower-gui : sudo apt-get install cpupower-gui 
-#### •	Lunching : cpupower-gui
+##### o	Fedora: Sudo dnf install cpupower-gui
+##### o	Ubuntu: Install cpupower-gui: sudo apt-get install cpupower-gui 
+#### •	Lunching: cpupower-gui
 #### •	choose the CPU 3 and change the governot to OnDemand , then then frequency should scale within minFreq and maxFreq
 
 ### Cpupower (recommended)
 #### •	Change governor: sudo cpupower --cpu 3 frequency-set -g ondemand
-#### •	Change frequency intervale : sudo cpupower --cpu 3 frequency-set -d 0.8Ghz -u 2.1Ghz 
-#### •	Show cpu current frequency : 
+#### •	Change frequency intervale: sudo cpupower --cpu 3 frequency-set -d 0.8Ghz -u 2.1Ghz 
+#### •	Show cpu current frequency: 
 ##### o	sudo cpupower --cpu 3 frequency-info 
-##### o	Or : current governor : cat /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor
+##### o	Or: current governor: cat /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor
 ##### o	Current frequency:  cat /sys/devices/system/cpu/cpu3/cpufreq/scaling_cur_frequency
 
 ### ondemand governor parameters (example sampling_rate=10ms and threshold=75%) 
-#### • sampling_rate : echo 10000 | sudo tee /sys/devices/system/cpu/cpufreq/ondemand/sampling_rate
-#### • up_threshold : echo 75 | sudo tee /sys/devices/system/cpu/cpufreq/ondemand/up_threshold
+#### • sampling_rate: echo 10000 | sudo tee /sys/devices/system/cpu/cpufreq/ondemand/sampling_rate
+#### • up_threshold: echo 75 | sudo tee /sys/devices/system/cpu/cpufreq/ondemand/up_threshold
 
 
 # Connect client  with server 
 
 The client and server should be on the same network , so like this , the client will find the server using his IP address , and to ensure a fast communication , we use the cable RJ45 as a bridge between them . 
 
-## Server : 
+## Server: 
 ### •	The server IP address is 10.0.0.2/24 
 ### •	To set the network to be on this network: 
 #### o	sudo ip addr add 10.0.0.2/24 dev enp1s0 
 #### o	sudo ip link set enp1s0 up
 #### o	Where enp1s0 is the network adapter name
-### •	The server listening ports are : 9999 and 9950
+### •	The server listening ports are: 9999 and 9950
 ### •	To allow listening on those ports we should allow them from firewall
 #### o	sudo ufw allow 9999/tcp 
 #### o	sudo ufw allow 9999/udp
 #### o	sudo ufw allow 9950/tcp
 #### o	sudo ufw allow 9950/udp
 #### o	enable firewall: sudo ufw enable 
-#### o	check ufw status : sudo ufw status
+#### o	check ufw status: sudo ufw status
 
-## Client :
+## Client:
 
 the client also should be in the same network , let’s give it 10.0.0.1/24
 ### •	sudo ip addr add 10.0.0.1/24 dev eno1
@@ -179,7 +179,7 @@ the client also should be in the same network , let’s give it 10.0.0.1/24
 #### o	sudo ufw allow 9950/tcp
 #### o	sudo ufw allow 9950/udp
 #### o	enable firewall: sudo ufw enable 
-#### o	check ufw status : sudo ufw status
+#### o	check ufw status: sudo ufw status
 
 ## connection client-server:
 ### test connection from server: ping 10.0.0.1/24 
@@ -192,13 +192,13 @@ To monitor the utilization of CPU 3 while server running ( handling jobs ) , we 
 Monitor the CPU core 3 utilization each 1 second and collect results on CPU3 file 
 
 ## Fedora:
-### •	Install mpstat : 
+### •	Install mpstat: 
 #### o	sudo yum install sysstat
 #### o	sudo systemctl enable sysstat && sudo systemctl start sysstat
 ### •	mpstat -P 3 1 > cpu3.log
 
 ## ubuntu: 
-### •	Install mpstat : 
+### •	Install mpstat: 
 #### o	sudo apt install sysstat
 #### o	sudo systemctl enable sysstat && sudo systemctl start sysstat
 ### •	mpstat -P 3 1 > cpu3.log
@@ -213,12 +213,12 @@ There are several tools that monito CPU power consumption , like powerstat , tur
 Powerstat measures the power consumption of a laptop using the ACPI battery information. The output is like vmstat but also shows power consumption statistics.
 
 ### Fedora 
-#### •	Install powerstat : 
+#### •	Install powerstat: 
 ##### o	sudo dnf install epel-release
 ##### o	sudo dnf install powerstat
 #### •	powerstat -cDHRf 1
 ### Ubuntu
-#### •	Install powerstat : 
+#### •	Install powerstat: 
 ##### o	sudo apt install powerstat
 #### •	powerstat -cDHRf 1 
 
@@ -247,29 +247,29 @@ The job class define the structure of work job arriving from client . The calc m
 # start simulation 
 
 before starting the simulation we should compile the server and client code to .class , specifying the class path of each package .
-NB : the working directory should be ./MM1-Software 
+NB: the working directory should be ./MM1-Software 
 
-## Server : 
-### •	Compiling server :
+## Server: 
+### •	Compiling server:
 #### o	javac -cp “Server/Server/lib/*:.” Server/Server/src/*.java -d build/
-### •	Running server : cd build 
+### •	Running server: cd build 
 #### o export classpath: export CLASSPATH="../Server.Server/lib/*:."
 #### o Java Server.Server 5
 #####	Where 5 is the jobs arrival rate (lamda)
 
 ## Client 
-### •	Compiling client :
+### •	Compiling client:
 #### o	Javac -cp “Server/Server/lib/*:.” clien/src/*.java -d build/
-### •	Running client : cd build
+### •	Running client: cd build
 #### o export classpath: export CLASSPATH="../Server.Server/lib/*:."
 #### o	Java client.LoadGenrator 5 600000 1000000
 ##### Where 5 is lamda ( mean arrival rate ) 
 ##### And 600000 is the duration of sending jobs to server (10 min)
 ##### And 1000000 is the repeat parameter which distributed exponentially between 1M and 1.6M to ensure the exponential jobs handling. Big repeat  lead to big workload 
 
-NB : the jobs arrival rate for each frequency should be always less than the service rate (𝜆 < 𝜇), if is not the case, the system will fall on overflow.
+NB: the jobs arrival rate for each frequency should be always less than the service rate (𝜆 < 𝜇), if is not the case, the system will fall on overflow.
 
-To compute the maximum arrival rate (𝜆) for each frequency , we lunch the system for the first time for each frequency , and take the mean service rate for each frequency (𝜇) , then we compute the service rate 𝜇 when the CPU utilization 𝜌 is 10% , 20%, 30%, … ,90% using the mathematical relation : arrival_rate 𝜆 = 𝜌 * 𝜇 
+To compute the maximum arrival rate (𝜆) for each frequency , we lunch the system for the first time for each frequency , and take the mean service rate for each frequency (𝜇) , then we compute the service rate 𝜇 when the CPU utilization 𝜌 is 10% , 20%, 30%, … ,90% using the mathematical relation: arrival_rate 𝜆 = 𝜌 * 𝜇 
 
 After collecting arrival_rate values that we use 10%, 20%,... of cpucore using a chosen frequency, we collect them on an array and run for each frequency his arrival rate values (𝜆).
 
