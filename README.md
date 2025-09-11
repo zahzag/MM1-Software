@@ -10,7 +10,7 @@ The server role is to accept jobs and handle one by one using single CPU core , 
 to prepare the hardware for the implementation , we should , fix the server ip address , shiled the cpu-core  ,disable Simultaneaous multi-threading (SMT) , disable turbo-boost , and hyper threading  ,pin the process on it, set the CPU governor to “ondemand “, fix the frequency for each test, in the meanwhile , power consumption , frequency and utilization should be monitored in parallel, and choose the mean arrival rate that should not unstabilize the system ( CPU utilieation < 100% ) .
 
 
-# fix the server ip : 
+# fix the server ip: 
 the client send the jobs to the server using the ip address 10.0.0.2 / 9990 and 10.0.0.2 /9950 , so before starting the server , the user should set the ethernet card to use the 10.0.0.2 adress , and allow the lisetening on ports 9990 and 9950 
 set server address 
 ### sudo ip addr add 10.0.0.2/24 dev enp0s31f6 , where enp0s31f6 is the ethernet card name 
@@ -19,6 +19,7 @@ set server address
 ### sudo ufw allow 9950/tcp 
 ### sudo ufw enable
 ### check firewall status: sudo ufw status
+
 # cpu shielding 
 shielding CPU depends to each operating system , when the CPU is shielded , the OS will not use it , so it will be totally free
 ## for fedora : 
@@ -252,13 +253,15 @@ NB : the working directory should be ./MM1-Software
 ### •	Compiling server :
 #### o	javac -cp “Server/Server/lib/*:.” Server/Server/src/*.java -d build/
 ### •	Running server : cd build 
+#### o export classpath: export CLASSPATH="../Server.Server/lib/*:."
 #### o Java Server.Server 5
 #####	Where 5 is the jobs arrival rate (lamda)
 
 ## Client 
 ### •	Compiling client :
 #### o	Javac -cp “Server/Server/lib/*:.” clien/src/*.java -d build/
-### •	Running client :
+### •	Running client : cd build
+#### o export classpath: export CLASSPATH="../Server.Server/lib/*:."
 #### o	Java client.LoadGenrator 5 600000 1000000
 ##### Where 5 is lamda ( mean arrival rate ) 
 ##### And 600000 is the duration of sending jobs to server (10 min)
