@@ -19,7 +19,7 @@ public class WorkerThreadFactory implements ThreadFactory {
         
         this.name = name;
     }
-    /**
+    /** 
      * Creates a new {@link Thread} for the given {@link Runnable} task.
      *
      * @param runnable the task to be executed by the new thread
@@ -34,5 +34,6 @@ public class WorkerThreadFactory implements ThreadFactory {
     }
 
 }
+
 
 
