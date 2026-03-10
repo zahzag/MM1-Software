@@ -21,7 +21,10 @@ public class ResetListener implements Runnable {
 	private int state;
 	private String ipaddr = "10.0.0.2";
 	public static long arrivalTime=0;
-
+	/**
+	* Binds a UDP socket to {@code resetPort} on the configured server IP,
+	* then mirrors the server's run-state flag.
+	*/
 	public ResetListener() {
 		try {
 			resetSocket = new DatagramSocket(resetPort, InetAddress.getByName(ipaddr));
@@ -32,7 +35,13 @@ public class ResetListener implements Runnable {
         }
         this.state = Server.RUN;
 	}
-	
+	/**
+	 * Spins until {@link WorkerThreadPool#executorPool} is initialised,
+	 * sleeping 50 ms between checks. Returns {@code null} if the thread
+	 * is interrupted while waiting.
+	 *
+	 * @return the ready executor pool, or {@code null} on interruption
+	 */
 	private CustomWorkerThreadPool awaitExecutor() {
         CustomWorkerThreadPool exec;
         while ((exec = WorkerThreadPool.executorPool) == null) {
@@ -40,7 +49,14 @@ public class ResetListener implements Runnable {
         }
         return exec;
     }
-
+	/**
+	 * Main loop: blocks on UDP receive, decodes each packet, waits for the
+	 * executor pool to be ready, then dispatches a {@link ResetJob}.
+	 * <ul>
+	 *   <li>{@code RESET1} – high-priority reset, inserted at the head of the queue ({@code front=true}).</li>
+	 *   <li>anything else – normal reset, appended at the tail of the queue ({@code front=false}).</li>
+	 * </ul>
+	 */
 	public void run() {
 		System.out.println("ResetListener running...");
 
