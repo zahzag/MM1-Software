@@ -18,30 +18,23 @@ import java.net.UnknownHostException;
  */
 public class LoadGenerator implements Runnable {
 
-    private DatagramSocket resetBroadcastSocket;
-    private DatagramSocket loadGeneratorSocket;
-
-    private double lambda;
-    private static int duration;
-    private static int repeat;
-    
-    private double rate;
-    
-    private Distribution dist;
-    private InetAddress serverIPAddress;
-    
-    private static final int jobListenerPort = 9999;
-    private static final int resetListenerPort = 9950;
-
-    private static final String serverIP = "10.0.0.2";//server address
-    //private static final String serverIP = "127.0.0.1";//local address
-
-    private static final int STOP = 0;
-    private static final int RUN = 1;
-
-    private int counter = 0;
-    private long starttime, endtime;
-    private int state;
+   private DatagramSocket resetBroadcastSocket;
+   private DatagramSocket loadGeneratorSocket;
+   private double lambda = (double)0.0F;
+   private static int duration = 0;
+   private static int repeat = 0;
+   private double rate = (double)0.0F;
+   private Distribution dist;
+   private InetAddress serverIPAddress;
+   private static final int jobListenerPort = 9999;
+   private static final int resetListenerPort = 9950;
+   private static final String serverIP = "10.0.0.2";
+   private static final int STOP = 0;
+   private static final int RUN = 1;
+   private int counter = 0;
+   private long starttime = 0L;
+   private long endtime = 0L;
+   private int state = 0;
 
     // constructor 
     public LoadGenerator(double lambda) {
@@ -55,7 +48,7 @@ public class LoadGenerator implements Runnable {
             e1.printStackTrace();
         }
 
-        dist = new Distribution();
+        this.dist = new Distribution();
 
         try {
             this.loadGeneratorSocket = new DatagramSocket();
@@ -71,7 +64,7 @@ public class LoadGenerator implements Runnable {
             e.printStackTrace();
         }
     
-        loadGeneratorSocket.connect(serverIPAddress, jobListenerPort);
+        this.loadGeneratorSocket.connect(serverIPAddress, jobListenerPort);
         
     }
 
@@ -80,42 +73,39 @@ public class LoadGenerator implements Runnable {
      * between two packet is exponentially distributed  */
     public void run() {
     	//List<Long> sendTimes = new LinkedList<Long>();
-    	List<Long> repeatTimes = new LinkedList<Long>();
+    	LinkedList repeatTimes = new LinkedList();
         while (this.state == RUN) {
         //packet with exponentially distributed integer is sent to the server
 	        //to make the repeat distributed exponentially between 1 Million and 1.6 Million , then the random ditrubuted number should be [1,1.6] => min=1*1M , max = 1.6*1M=1.6M
-            double nextExpNumber=dist.nextExponentialRepeat();
+            double nextExpNumber=this.dist.nextExponentialRepeat();
             long service_repeat_time = Math.round(nextExpNumber * this.repeat);
-//	        System.out.println("Job Processed : "+(counter+1)+", Exponentially Repeat Value : " + service_repeat_time);
-            byte[] buffer = Long.toString(service_repeat_time).getBytes();
-            //System.out.println("service_repeat_time : "+ service_repeat_time);
-            try {
-                loadGeneratorSocket.send(new DatagramPacket(buffer,
+            
+			byte[] buffer = Long.toString(service_repeat_time).getBytes();
+
+			try {
+                this.loadGeneratorSocket.send(new DatagramPacket(buffer,
                         buffer.length, serverIPAddress, jobListenerPort));
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
             // The number of packets already sent : number of jobs
-            counter++;
-            //sendTimes.add(System.currentTimeMillis());
+            ++this.counter;
             repeatTimes.add(service_repeat_time);
             
             // calculation of the exponentially distributed waiting time before the next packet is sent
-            rate = dist.nextExponential(1.0 / (double) lambda);
-            //ensure that repeat not null
-            if (rate == 0)
-                rate = 1;
-
+			 this.rate = this.dist.nextExponential((double)1.0F / this.lambda);
+			 if (this.rate == (double)0.0F) {
+          	  this.rate = (double)1.0F;
+			 }
+			
             try {
-//		System.out.println("Rate in Seconds" + this.rate);
-		Thread.sleep(Math.round(1000 * this.rate));
-//		System.out.println("Rate in MiliSeconds " +(1000*this.rate));
-//		Thread.sleep(Math.round(33));
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            Thread.sleep(Math.round((double)1000.0F * this.rate));
+		  	} catch (InterruptedException e) {
+          	  e.printStackTrace();
+		 	}
         }
+		
 	// new text file
 		FileWriter writer;
 		File file;
@@ -133,7 +123,6 @@ public class LoadGenerator implements Runnable {
 			writer.flush();
 			writer.close();
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
     }
