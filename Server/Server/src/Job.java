@@ -19,7 +19,7 @@ public class Job implements Runnable {
 	public static final Logger logger = LoggerFactory.getLogger(Job.class);
 	public long timeStamp;
 	public int repeat;
-
+	public static long jobscounter=0;
 	private JobData data = new JobData();
 	private long endTimeCurrentRequest;
 	private long startTimeStampServiceTime;
@@ -47,7 +47,11 @@ public class Job implements Runnable {
 
 		endTimeCurrentRequest = System.nanoTime();
 		responseTime = endTimeCurrentRequest - this.timeStamp;//millisecond
+		interArrivalTime=timeStamp-ResetListener.arrivalTime;
+		//System.out.println("timestamp : "+timeStamp/1000000000+" arrivaleTime :"+ResetListener.arrivalTime/1000000000+" interarrivale time :"+interArrivalTime/1000000000);
+		ResetListener.arrivalTime=timeStamp;
 		data.setResponseTime(responseTime);
+		data.setInterArrivaleTime(interArrivalTime);
 		Server.jobDataQueue.offer(data);
 
 	}
@@ -98,6 +102,10 @@ public class Job implements Runnable {
 		cpuTime = endTimeCpuTime - startTimeCpuTime;
 		//System.out.println("CPU Time for Job: " + cpuTime /1_000_000.0 + " ms");
 
+		//compute waiting time using time stamp as the time the job added to the queue and startTimeStampServiceTime as startExecusion time
+		waitingTime= startTimeStampServiceTime-this.timeStamp;
+		data.setWaitingTime(waitingTime);
+
 		data.setCalcTime(calcTime);
 		data.setCpuTime(cpuTime);
 		packetLength = repeat;
@@ -106,6 +114,7 @@ public class Job implements Runnable {
 	}
 
 }
+
 
 
 
