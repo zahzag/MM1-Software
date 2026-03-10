@@ -38,12 +38,6 @@ public class ResetJob extends Job {
 				Server.hmap.put(i, 0);
 			}
 
-			if(Server.hmap.containsValue(null) || Server.hmap.isEmpty() ){
-				System.out.println("Initializing HashMap in ResetJob Second Time ");
-				for (int i = 0; i <= 1000; i++) {
-					Server.hmap.putIfAbsent(i, 0); //to avoid null values if hmap not initialized well
-				}
-			}
 			//logger.info(""+Server.hmap);
 			LocalTime time011 = LocalTime.now();
 			System.out.println("Time at end of Reset job number 1 : " + time011);
@@ -61,12 +55,10 @@ public class ResetJob extends Job {
 			// Capture FreqStats
 			try {
 				ProcessBuilder pb = new ProcessBuilder("Server/FreqStatINTEL");
-				//ProcessBuilder pb = new ProcessBuilder("/home/rootie/ServerMultiThreads/src/Server/FreqStatAMD");
 				p = pb.start();
 				LocalTime time02 = LocalTime.now();
 				System.out.println("Logging Actually Started : " + time02);
 			} catch (Throwable t) {
-				// TODO Auto-generated catch block
 				t.printStackTrace();
 			}
 
@@ -78,10 +70,8 @@ public class ResetJob extends Job {
 		else {
 			try {
 				ProcessBuilder pb = new ProcessBuilder("Server/FreqStatINTEL");
-				//ProcessBuilder pb = new ProcessBuilder("/home/rooter/ServerMultiThreads/src/Server/FreqStatAMD");
 				p = pb.start();
 			} catch (Throwable t1) {
-				// TODO Auto-generated catch block
 			t1.printStackTrace();
 			}
 			LocalTime time2 = LocalTime.now();
@@ -101,12 +91,6 @@ public class ResetJob extends Job {
 			Metrics.RspTime = 0;
 			Metrics.PacketLength = 0;
 			Metrics.SrvcTime = 0;
-			
-			
-/*			Server.enterSystem.clear();
-			Server.enterExecution.clear();
-			Server.leaveSystem.clear();*/
-			
 			
 			Server.highest_state = 0;
 			System.out.println("Initializing HashMap in ResetJob");
