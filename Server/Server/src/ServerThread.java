@@ -9,8 +9,13 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 
 /**
- * This class implements the thread that waits for incoming jobs and gives them to executorPool.
- * Also captures the state of the system before the job enter's the system.
+ * ServerThread is the main listener thread for incoming UDP job requests.
+ *
+ * <p>It continuously listens on a UDP socket for job packets sent by clients.
+ * For each received packet.
+ * <p>This class is a key component of the MM1 queueing model simulation,
+ * responsible for job arrival handling in the server-side implementation.
+ *
  * @author zahzag
  */
 public class ServerThread implements Runnable {
@@ -26,7 +31,11 @@ public class ServerThread implements Runnable {
 	private DatagramPacket packet;
 	private static final Logger log = LoggerFactory.getLogger(ServerThread.class);
 
-
+/**
+ * Constructs a ServerThread that listens for UDP packets on the given port.
+ *
+ * @param port the UDP port number to bind and listen on
+ */
 	public ServerThread(int port) {
 
 		try {
@@ -38,7 +47,13 @@ public class ServerThread implements Runnable {
 		this.state = Server.RUN;
 
 	}
-
+/**
+ * Main loop of the server thread.
+ *
+ * <p>Continuously receives UDP packets, extracts job parameters,
+ * records the queue depth at arrival time, and dispatches jobs
+ * to the worker thread pool for execution.
+ */
 	// @Override
 	public void run() {
 		System.out.println("Server running...");
@@ -62,7 +77,9 @@ public class ServerThread implements Runnable {
 			int n = Integer.parseInt(content);
 			System.out.println("Packet Received: " + content);
 			Job currentJob = new Job(System.nanoTime(), n);
-
+			
+			// Capture the number of jobs currently in the system (active workers + queued jobs)
+			// This represents the queue length seen by the arriving job (used for state statistics)
 			state_before_entering = WorkerThreadPool.executorPool.getActiveCount() + WorkerThreadPool.executorPool.getQueue().size();
 
 
@@ -75,17 +92,17 @@ public class ServerThread implements Runnable {
 
 			}else
 				System.out.println("OverFlow");
-
+			
+			// Submit the job to the thread pool for asynchronous execution
 			WorkerThreadPool.executorPool.execute(currentJob);
 
-//			long time = System.nanoTime();
-//			Server.enterSystem.add(time);
 			Server.counter++;
 
-			//check the cpu id used by thread
+			// Log which CPU core this thread is currently running on (for CPU affinity diagnostics)
 			int cpuCore = CpuCoreID.CLibrary.INSTANCE.sched_getcpu();
 			log.info("Thread CPU Core: " + cpuCore);
 		}
 	}
 }
+
 
