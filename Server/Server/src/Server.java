@@ -17,7 +17,6 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class Server {
 
-	//static final int RUN = 1;
 	static int RUN = 1;
 	static LinkedBlockingQueue<JobData> jobDataQueue;
 	static long counter;
@@ -26,12 +25,6 @@ public class Server {
 	private Thread serverThread, resetServer;
 	static WorkerThreadPool workerThreadPool;
 	
-/*	public static List<Long> enterSystem = new ArrayList<Long>();
-	public static List<Long> enterExecution = new ArrayList<Long>();
-	public static List<Long> leaveSystem = new ArrayList<Long>();*/
-
-
-
 
 	public static double lambda;
 
@@ -58,7 +51,7 @@ public class Server {
 		int availableProcessors = Runtime.getRuntime().availableProcessors();
 		// Get the number of CPU cores
 		System.out.println("Available processors: " + availableProcessors);
-		System.out.println(AffinityLock.dumpLocks());
+		try { System.out.println(AffinityLock.dumpLocks()); } catch (Throwable t) { System.out.println("Affinity info unavailable: " + t.getMessage()); }
 		new Server(9999);
 	}
 }
