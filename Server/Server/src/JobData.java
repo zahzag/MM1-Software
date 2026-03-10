@@ -12,10 +12,16 @@ public class JobData {
     private long packetLength;
     private long responseTime;
     private long cpuTime;
-    public void setCalcTime (long calcTime) {
-        this.calcTime = calcTime;
-    }
+    private long interArrivaleTime=0;
+    private long waintingTime=0;
     
+    public void setCalcTime (long calcTime) { this.calcTime = calcTime;
+    }
+    public void setInterArrivaleTime (long interArrivaleTime1) { this.interArrivaleTime = interArrivaleTime1;
+    }
+    public void setWaitingTime (long waitingTime1) { this.waintingTime = waitingTime1;
+    }
+
     public void setPacketLength (long packetLength) {
         this.packetLength = packetLength;
     }
@@ -32,10 +38,13 @@ public class JobData {
     public long getPacketLength () {
         return packetLength;
     }
-    
+
     public long getResponseTime () {
         return responseTime;
     }
     public long getCpuTime(){return cpuTime;}
+    public long getInterArrivaleTime () { return interArrivaleTime;}
+    public long getWaintingTime () { return waintingTime;}
 }
+
 
