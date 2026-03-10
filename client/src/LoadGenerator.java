@@ -48,7 +48,7 @@ public class LoadGenerator implements Runnable {
             e1.printStackTrace();
         }
 
-        this.dist = new Distribution();
+        dist = new Distribution();
 
         try {
             this.loadGeneratorSocket = new DatagramSocket();
@@ -73,7 +73,7 @@ public class LoadGenerator implements Runnable {
      * between two packet is exponentially distributed  */
     public void run() {
     	//List<Long> sendTimes = new LinkedList<Long>();
-    	LinkedList repeatTimes = new LinkedList();
+    	List<Long> repeatTimes = new LinkedList<Long>();
         while (this.state == RUN) {
         //packet with exponentially distributed integer is sent to the server
 	        //to make the repeat distributed exponentially between 1 Million and 1.6 Million , then the random ditrubuted number should be [1,1.6] => min=1*1M , max = 1.6*1M=1.6M
@@ -90,17 +90,17 @@ public class LoadGenerator implements Runnable {
             }
 
             // The number of packets already sent : number of jobs
-            ++this.counter;
+            counter++;
             repeatTimes.add(service_repeat_time);
             
             // calculation of the exponentially distributed waiting time before the next packet is sent
-			 this.rate = this.dist.nextExponential((double)1.0F / this.lambda);
-			 if (this.rate == (double)0.0F) {
-          	  this.rate = (double)1.0F;
-			 }
+		 	rate = dist.nextExponential(1.0 / (double) lambda);
+            //ensure that repeat not null
+		 	if (rate == 0)
+			 	rate = 1;
 			
             try {
-            Thread.sleep(Math.round((double)1000.0F * this.rate));
+			Thread.sleep(Math.round(1000 * this.rate));
 		  	} catch (InterruptedException e) {
           	  e.printStackTrace();
 		 	}
@@ -191,7 +191,8 @@ public class LoadGenerator implements Runnable {
         
         System.out.println("StartTime " + starttime);
         System.out.println("EndTime " + endtime);
-        
+		System.out.println("client counter " + loadGen.counter);
+
         
         loadGen.counter = 0;
                 
@@ -209,4 +210,5 @@ public class LoadGenerator implements Runnable {
         }
     }
 }
+
 
