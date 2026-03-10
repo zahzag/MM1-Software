@@ -41,7 +41,14 @@ public class Server {
 		resetServer.start();
 		workerThreadPool.runWorkerThreadPool();
 	}
-
+/**
+ * Entry point. Reads the arrival rate (lambda) from args, logs CPU availability
+ * and affinity info, then starts the server on port 9999.
+ *
+ * @param args args[0] - the arrival rate lambda (double)
+ * @throws UnknownHostException if the local host cannot be resolved
+ * @throws IOException if an I/O error occurs while starting the server
+ */
 	public static void main(String[] args) throws UnknownHostException, IOException {
 
 
@@ -51,7 +58,11 @@ public class Server {
 		int availableProcessors = Runtime.getRuntime().availableProcessors();
 		// Get the number of CPU cores
 		System.out.println("Available processors: " + availableProcessors);
+		
+		// Log CPU affinity lock state if available
 		try { System.out.println(AffinityLock.dumpLocks()); } catch (Throwable t) { System.out.println("Affinity info unavailable: " + t.getMessage()); }
+		
+		// Start the server on the default port
 		new Server(9999);
 	}
 }
