@@ -30,18 +30,20 @@ public class WorkerThreadPool {
 
 	public static CustomWorkerThreadPool executorPool;
 
-
+	/**
+	 * Initializes and starts the worker thread pool with a single core/max thread,
+	 * a rejection handler, and CPU affinity pinning to different cores.
+	 */
 	public void runWorkerThreadPool() {
 		RejectedExecutionHandlerImpl rejectionHandler = new RejectedExecutionHandlerImpl();
 
 		workerThreadFactory = new AffinityThreadFactory("Worker",AffinityStrategies.DIFFERENT_CORE );
 		executorPool = new CustomWorkerThreadPool(1, 1, 10, TimeUnit.SECONDS, queue, workerThreadFactory, rejectionHandler);
 
-		//executorPool.prestartAllCoreThreads();
-
 	}
 
 }
+
 
 
 
