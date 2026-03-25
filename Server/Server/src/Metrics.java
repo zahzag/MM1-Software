@@ -19,27 +19,32 @@ import java.util.Optional;
 
 public class Metrics {
 
-	public static double MeanRspTime;
-	public static double MeanSrvcTime;
-	public static double MeanPacketLength;
-	public static long RspTime;
-	public static long SrvcTime;
-	public static long PacketLength;
-	public static double p_idle;
-	public static double p_loaded;
-	public static long job_count;
+	public static double MeanRspTime=0;
+	public static double MeanSrvcTime=0;
+	public static double MeanPacketLength=0;
+	public static long RspTime=0;
+	public static long SrvcTime=0;
+	public static long PacketLength=0;
+	public static double p_idle=0;
+	public static double p_loaded=0;
+	public static long job_count=0;
 	public static long pool_job_count;
-	public static double measured_lambda;
-	public static double mean_service_rate;
-	public static double mean_response_time;
-	public static double utilization;
-	public static double U;
-	public static double mean_service_time;
+	public static double measured_lambda=0;
+	public static double mean_service_rate=0;
+	public static double mean_response_time=0;
+	public static double utilization=0;
+	public static double U=0;
+	public static double mean_service_time=0;
 	public static int state_total = 0;
 	public static double k = 0;
 	public static double MRT = 0;
-	public static long cpuTime;
-	public static double MeanCpuTime;
+	public static long cpuTime=0;
+	public static double MeanCpuTime=0;
+	public static double Mes_interArrivaleTime=0;
+	public static double MeanMes_interArrivaleTime=0;
+	public static double MeanWaintingTime=0;
+	public static double waitingTime=0;
+
 
 	public static void calculate() {
 		// new text file
@@ -94,6 +99,7 @@ public class Metrics {
 			rowTitles.createCell(16).setCellValue("Mes. frequency [KHz]");
 			rowTitles.createCell(17).setCellValue("Mod. Power [W]");
 			rowTitles.createCell(18).setCellValue("Mes. Power [W]");
+			
 		}
 		// Time needed to create Excel file.
 		try {
@@ -117,8 +123,7 @@ public class Metrics {
 
 				// Calculates Steady State Probability for each state.
 				for (int j = 0; j <= Server.highest_state; j++) {
-
-						k= (j*((double) (Server.hmap.get(j)) / state_total))+k;
+                    k= (j*((double) (Server.hmap.get(j)) / state_total))+k;
 
 				}
 
@@ -128,7 +133,8 @@ public class Metrics {
 
 				U = 100-(((double) (Server.hmap.get(0)) / state_total) * 100);
 				System.out.println("Modelled Utilization(1-Pi_0) : " + U);
-				
+
+				// write Steady State Probabilities in text file
 				writer = new FileWriter(file, true);
 				for (int j = 0; j <= Server.highest_state; j++) {
 					writer.write("Pi_" + j + ": " + ((double) (Server.hmap.get(j)) / state_total) * 100);
@@ -162,6 +168,7 @@ public class Metrics {
 						row.createCell(12).setCellValue(U);
 						row.createCell(14).setCellValue(Server.highest_state);
 						row.createCell(15).setCellValue(MeanCpuTime/1000000);
+
 
 						test = false;
 
@@ -213,7 +220,7 @@ public class Metrics {
 
 		JobData data = null;
 		boolean empty = false;
-
+		int jobConter=0;
 		while (!empty) {
 
 			if (Server.jobDataQueue.peek() != null) {
@@ -227,12 +234,20 @@ public class Metrics {
 				SrvcTime = SrvcTime + data.getCalcTime();// nanoseconds
 				PacketLength = PacketLength + data.getPacketLength();
 				cpuTime = cpuTime + data.getCpuTime();//nanosecands
-
+				if(jobConter>0) {
+					Mes_interArrivaleTime = Mes_interArrivaleTime + data.getInterArrivaleTime();
+					System.out.println(data.getInterArrivaleTime());
+					waitingTime = waitingTime+data.getWaintingTime();
+				}
+				jobConter=jobConter+1;
 			} else {
 				MeanRspTime = (double)(RspTime / Server.counter);
-				MeanSrvcTime = (double)(SrvcTime/ Server.counter);
+				MeanSrvcTime = (double)(SrvcTime/ Server.counter);//the measured MST
 				MeanPacketLength = (double)(PacketLength / Server.counter);
 				MeanCpuTime = (double)(cpuTime/Server.counter);
+				MeanMes_interArrivaleTime=(double)(Mes_interArrivaleTime/Server.counter); //nano seconds
+				MeanMes_interArrivaleTime=MeanMes_interArrivaleTime/1000000000; // seconds
+				MeanWaintingTime=(double)waitingTime/Server.counter;
 				empty = true;
 			}
 		}
@@ -241,11 +256,11 @@ public class Metrics {
 	}
 
 	private static void modelled_data() {
-		
+
 		job_count = Server.counter;
 		System.out.println("No. of Jobs Served : " + job_count);
 		System.out.println("Modelled Lambda : " + Server.lambda);
-		measured_lambda = job_count/600.0;//set according to the duration of the test run otherwise calculations will be wrong : 600.0
+		measured_lambda = job_count/600.0;//set according to the duration of the test run otherwise calculations will be wrong : 600.0 // 1800 is 30 minutes
 		System.out.println("Measured Lambda : " + measured_lambda);
 		mean_service_time = MeanSrvcTime/1000000;//Nanosecond to Milliseconds
 		System.out.println("Measured Mean Service Time : " + mean_service_time + " Milliseconds");
@@ -256,8 +271,19 @@ public class Metrics {
 		System.out.println("Measured Mean Response Time: " + MeanRspTime/1000000 + " Miliseconds");
 		utilization = (measured_lambda / mean_service_rate) * 100;
 		System.out.println("Modelled Utilization : " + utilization);
+		System.out.println("Server counter : " + Server.counter);
+
+
 
 		System.out.println("Measured cpu time "+ MeanCpuTime/1_000_000.0);
-
+/*
+		System.out.println("-----POOL VALUES--------");
+		double mean_service_time_pool = Service_Time_pool_avg/1000000;//Milliseconds
+		System.out.println("Measured Mean Service Time : " + mean_service_time_pool + " Milliseconds");
+		double service_rate_pool = 1000000000 / Service_Time_pool_avg;//Milliseconds to seconds
+		System.out.println("Modelled Service rate in Seconds: " + service_rate_pool + " Jobs/sec");
+		double mean_response_time_pool = (1/service_rate_pool)/(1-(measured_lambda/service_rate_pool))*1000;
+        System.out.println("Modelled Mean Response Time : "+ mean_response_time_pool + " Miliseconds");
+		System.out.println("Measured Mean Response Time: " + MRT_pool_avg/1000000 + " Miliseconds");*/
 	}
 }
