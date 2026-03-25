@@ -276,14 +276,6 @@ public class Metrics {
 
 
 		System.out.println("Measured cpu time "+ MeanCpuTime/1_000_000.0);
-/*
-		System.out.println("-----POOL VALUES--------");
-		double mean_service_time_pool = Service_Time_pool_avg/1000000;//Milliseconds
-		System.out.println("Measured Mean Service Time : " + mean_service_time_pool + " Milliseconds");
-		double service_rate_pool = 1000000000 / Service_Time_pool_avg;//Milliseconds to seconds
-		System.out.println("Modelled Service rate in Seconds: " + service_rate_pool + " Jobs/sec");
-		double mean_response_time_pool = (1/service_rate_pool)/(1-(measured_lambda/service_rate_pool))*1000;
-        System.out.println("Modelled Mean Response Time : "+ mean_response_time_pool + " Miliseconds");
-		System.out.println("Measured Mean Response Time: " + MRT_pool_avg/1000000 + " Miliseconds");*/
+
 	}
 }
