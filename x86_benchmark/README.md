@@ -1,12 +1,11 @@
 # x86_benchmark
 
-Clean x86 benchmark scripts for ondemand governor parameter studies.
+x86 benchmark scripts for ondemand governor parameter studies.
 
-This package is isolated from legacy scripts and does not delete or overwrite existing files.
 
 ## Files
 
-- `x86_benchmark/run_ondemand_new.sh`: run one static configuration (`sampling_rate`, `threshold`).
+- `x86_benchmark/run_ondemand.sh`: run one static configuration (`sampling_rate`, `threshold`).
 - `x86_benchmark/run_threshold_sweep.sh`: run a full grid automatically.
 - `x86_benchmark/lib/common.sh`: shared helpers (safe PID handling, output directory creation, archiving).
 - `x86_benchmark/helpers.sh`: minimal benchmark math and hardware helper functions used by the runner.
