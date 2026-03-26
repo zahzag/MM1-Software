@@ -80,25 +80,25 @@ public class Metrics {
 			sheet = wb.createSheet("Test_Sheet");
 			Row rowTitles = sheet.createRow(0);
 
-			rowTitles.createCell(0).setCellValue("cpu utilization [%]");
-			rowTitles.createCell(1).setCellValue("sampling rate [\u00B5s]");
-			rowTitles.createCell(2).setCellValue("threshold [%]");
-			rowTitles.createCell(3).setCellValue("Mod. Lambda [jobs/s]");
-			rowTitles.createCell(4).setCellValue("Mes. Lambda [jobs/s]");
-			rowTitles.createCell(5).setCellValue("Mes. MST [ms]");
-			rowTitles.createCell(6).setCellValue("Mes. MSR [jobs/s]");
-			rowTitles.createCell(7).setCellValue("MRT=k/lambda [ms]");
-			rowTitles.createCell(8).setCellValue("Mod. MRT= W+S [ms]");
-			rowTitles.createCell(9).setCellValue("Mes. MRT [ms]");
-			rowTitles.createCell(10).setCellValue("Mes. Mean interarrivaletime [ms]");
-			rowTitles.createCell(11).setCellValue("Mod. Utilization [%]");
-			rowTitles.createCell(12).setCellValue("1-Pi_0");
-			rowTitles.createCell(13).setCellValue("Mes. Utilization [%]");
-			rowTitles.createCell(14).setCellValue("State");
-			rowTitles.createCell(15).setCellValue("Mes. MCpuTime [ms]");
-			rowTitles.createCell(16).setCellValue("Mes. frequency [KHz]");
-			rowTitles.createCell(17).setCellValue("Mod. Power [W]");
-			rowTitles.createCell(18).setCellValue("Mes. Power [W]");
+			rowTitles.createCell(0).setCellValue("CPU Utilization [%]");
+			rowTitles.createCell(1).setCellValue("Sampling Rate [\u00B5s]");
+			rowTitles.createCell(2).setCellValue("Threshold [%]");
+			rowTitles.createCell(3).setCellValue("Modeled Arrival Rate [jobs/s]");
+			rowTitles.createCell(4).setCellValue("Measured Arrival Rate [jobs/s]");
+			rowTitles.createCell(5).setCellValue("Measured Mean Service Time [ms]");
+			rowTitles.createCell(6).setCellValue("Measured Mean Service Rate [jobs/s]");
+			rowTitles.createCell(7).setCellValue("Modeled MRT (k/\u03BB) [ms]");
+			rowTitles.createCell(8).setCellValue("Modeled MRT (W+S) [ms]");
+			rowTitles.createCell(9).setCellValue("Measured MRT [ms]");
+			rowTitles.createCell(10).setCellValue("Measured Mean Interarrival Time [ms]");
+			rowTitles.createCell(11).setCellValue("Modeled Utilization [%]");
+			rowTitles.createCell(12).setCellValue("Modeled Busy Probability (1-\u03C0\u2080)");
+			rowTitles.createCell(13).setCellValue("Measured Utilization [%]");
+			rowTitles.createCell(14).setCellValue("Highest State");
+			rowTitles.createCell(15).setCellValue("Measured Mean CPU Time [ms]");
+			rowTitles.createCell(16).setCellValue("Measured Mean CORE Frequency [KHz]");
+			rowTitles.createCell(17).setCellValue("Modeled CORE Power [W]");
+			rowTitles.createCell(18).setCellValue("Measured CORE Power [W]");
 			
 		}
 		// Time needed to create Excel file.
@@ -276,6 +276,5 @@ public class Metrics {
 
 
 		System.out.println("Measured cpu time "+ MeanCpuTime/1_000_000.0);
-
-	}
+}
 }
