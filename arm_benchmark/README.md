@@ -1,7 +1,5 @@
 # arm_benchmark
 
-Clean ARM benchmark scripts aligned with the x86 benchmark structure.
-
 ## What is different on ARM
 
 - Frequency is read from sysfs (`/sys/devices/system/cpu/cpuX/cpufreq/scaling_cur_freq`).
@@ -52,6 +50,6 @@ nohup ./run_threshold_sweep.sh \
   --runs 1 \
   --min-freq 600000 \
   --max-freq 2400000 \
-  --sampling-rates "40000,50000,60000,70000,80000,90000,100000" \
+  --sampling-rates "10000,20000,30000,40000,50000,60000,70000,80000,90000,100000" \
   --thresholds "75,80,85,90,95" &
 ```
