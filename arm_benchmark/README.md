@@ -14,7 +14,7 @@
 
 ## Files
 
-- `arm_benchmark/run_ondemand_new.sh`: run one static configuration.
+- `arm_benchmark/run_ondemand.sh`: run one static configuration.
 - `arm_benchmark/run_threshold_sweep.sh`: run all sampling-rate/threshold combinations.
 - `arm_benchmark/helpers.sh`: clean ARM helper functions.
 - `arm_benchmark/lib/common.sh`: shared runner utilities and log archiving.
