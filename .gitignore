@@ -1,1 +1,7 @@
-results/
+.idea/
+.vscode/
+build/
+*.class
+*.log
+*.tmp
+*.DS_Store
