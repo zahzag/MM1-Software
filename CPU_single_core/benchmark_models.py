@@ -37,6 +37,8 @@ TARGETS = [
 RANDOM_STATE = 42
 TEST_SIZE = 0.2
 BEST_MODEL_METRIC = "r2"
+KNN_NEIGHBORS = 7
+RF_ESTIMATORS = 400
 
 
 def _build_models() -> Dict[str, Pipeline]:
@@ -51,13 +53,13 @@ def _build_models() -> Dict[str, Pipeline]:
         ]),
         "KNN": Pipeline([
             ("scaler", StandardScaler()),
-            ("model", KNeighborsRegressor(n_neighbors=7)),
+            ("model", KNeighborsRegressor(n_neighbors=KNN_NEIGHBORS)),
         ]),
         "RandomForest": Pipeline([
             (
                 "model",
                 RandomForestRegressor(
-                    n_estimators=400,
+                    n_estimators=RF_ESTIMATORS,
                     random_state=RANDOM_STATE,
                     n_jobs=-1,
                 ),
@@ -111,7 +113,10 @@ def benchmark_dataset(df: pd.DataFrame) -> Dict[str, object]:
             pred = model.predict(x_test)
             model_scores[model_name] = _metrics(y_test.values, pred)
 
-        best_model = max(model_scores.items(), key=lambda item: item[1][BEST_MODEL_METRIC])
+        best_model = max(
+            model_scores.items(),
+            key=lambda model_item: model_item[1][BEST_MODEL_METRIC],
+        )
 
         results["targets"][target] = {
             "rows_used": int(len(x)),
