@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Any, Dict, List, Tuple
 
 import numpy as np
 import pandas as pd
@@ -91,8 +91,8 @@ def _metrics(y_true: np.ndarray, y_pred: np.ndarray) -> Dict[str, float]:
     }
 
 
-def benchmark_dataset(df: pd.DataFrame) -> Dict[str, object]:
-    results: Dict[str, object] = {"targets": {}}
+def benchmark_dataset(df: pd.DataFrame) -> Dict[str, Any]:
+    results: Dict[str, Any] = {"targets": {}}
 
     for target in TARGETS:
         if target not in df.columns:
@@ -134,7 +134,7 @@ def _fmt(v: float) -> str:
     return f"{v:.4f}"
 
 
-def write_markdown(results: Dict[str, object]) -> None:
+def write_markdown(results: Dict[str, Any]) -> None:
     lines: List[str] = []
     lines.append("# ML Benchmark (CPU Single Core Dataset)")
     lines.append("")
@@ -183,7 +183,7 @@ def write_markdown(results: Dict[str, object]) -> None:
 
 
 def main() -> None:
-    all_results: Dict[str, object] = {}
+    all_results: Dict[str, Any] = {}
 
     for dataset_name, dataset_path in DATASETS.items():
         df = pd.read_csv(dataset_path)
