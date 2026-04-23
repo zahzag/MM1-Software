@@ -36,6 +36,7 @@ TARGETS = [
 
 RANDOM_STATE = 42
 TEST_SIZE = 0.2
+BEST_MODEL_METRIC = "r2"
 
 
 def _build_models() -> Dict[str, Pipeline]:
@@ -88,7 +89,7 @@ def _metrics(y_true: np.ndarray, y_pred: np.ndarray) -> Dict[str, float]:
     }
 
 
-def benchmark_dataset(dataset_name: str, df: pd.DataFrame) -> Dict[str, object]:
+def benchmark_dataset(df: pd.DataFrame) -> Dict[str, object]:
     results: Dict[str, object] = {"targets": {}}
 
     for target in TARGETS:
@@ -110,7 +111,7 @@ def benchmark_dataset(dataset_name: str, df: pd.DataFrame) -> Dict[str, object]:
             pred = model.predict(x_test)
             model_scores[model_name] = _metrics(y_test.values, pred)
 
-        best_model = max(model_scores.items(), key=lambda item: item[1]["r2"])
+        best_model = max(model_scores.items(), key=lambda item: item[1][BEST_MODEL_METRIC])
 
         results["targets"][target] = {
             "rows_used": int(len(x)),
@@ -139,6 +140,8 @@ def write_markdown(results: Dict[str, object]) -> None:
     lines.append("```bash")
     lines.append("python CPU_single_core/benchmark_models.py")
     lines.append("```")
+    lines.append("")
+    lines.append(f"Best model selection metric: `{BEST_MODEL_METRIC.upper()}`.")
     lines.append("")
 
     for dataset_name, dataset_result in results.items():
@@ -179,7 +182,7 @@ def main() -> None:
 
     for dataset_name, dataset_path in DATASETS.items():
         df = pd.read_csv(dataset_path)
-        all_results[dataset_name] = benchmark_dataset(dataset_name, df)
+        all_results[dataset_name] = benchmark_dataset(df)
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     RESULTS_JSON.write_text(json.dumps(all_results, indent=2), encoding="utf-8")
